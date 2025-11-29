@@ -1,0 +1,107 @@
+/* ========================================= */
+/* 1. GLOBAL & SETUP */
+/* ========================================= */
+html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow-y: auto; overflow-x: hidden; background-color: #0a0a0a; overscroll-behavior: none; }
+
+/* Custom Scrollbar */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: #0a0a0a; }
+::-webkit-scrollbar-thumb { background: #262626; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #FACC15; }
+.no-scrollbar::-webkit-scrollbar { width: 6px; }
+.no-scrollbar::-webkit-scrollbar-track { background: transparent; }
+.no-scrollbar::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+.no-scrollbar::-webkit-scrollbar-thumb:hover { background: #FACC15; }
+
+/* ========================================= */
+/* 2. FLOATING NAVBAR (DYNAMIC ISLAND) */
+/* ========================================= */
+.nav-island { position: relative; width: 100%; max-width: 56rem; height: auto; background-color: rgba(10, 10, 10, 0.7); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.6); z-index: 50; overflow: hidden; transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1), height 0.5s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s ease, max-width 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+.nav-island::before { content: ""; position: absolute; inset: 0; border-radius: 2rem; padding: 2px; background: linear-gradient(90deg, #FACC15 0%, rgba(250, 204, 21, 0) 30%, rgba(250, 204, 21, 0) 70%, #FACC15 100%); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; pointer-events: none; animation: borderBreathe 4s ease-in-out infinite; z-index: 1 !important; }
+.nav-island::after { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 9999px; background: linear-gradient(90deg, rgba(250, 204, 21, 0.15) 0%, transparent 40%, transparent 60%, rgba(250, 204, 21, 0.15) 100%); z-index: -1; filter: blur(10px); pointer-events: none; }
+@keyframes borderBreathe { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
+body:not(.menu-open) .scrolled .nav-island { background-color: rgba(5, 5, 5, 0.95); max-width: 48rem; padding-top: 0.5rem; padding-bottom: 0.5rem; }
+
+/* ========================================= */
+/* 3. ANIMASI NAVBAR MENYUSUT (SHRINK EFFECT) */
+/* ========================================= */
+.nav-desktop-container { transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); max-width: 600px; opacity: 1; overflow: hidden; white-space: nowrap; position: relative; z-index: 50 !important; }
+body.scrolled-mode .nav-desktop-container { max-width: 0 !important; width: 0 !important; padding-left: 0 !important; padding-right: 0 !important; margin: 0 !important; opacity: 0; border: none !important; pointer-events: none; transform: scale(0.9); }
+body.scrolled-mode #nav-marker { opacity: 0 !important; display: none !important; }
+body.scrolled-mode .nav-island { max-width: 24rem !important; background-color: rgba(5, 5, 5, 0.95) !important; box-shadow: 0 15px 40px -5px rgba(0, 0, 0, 0.8) !important; padding-top: 0.5rem; padding-bottom: 0.5rem; border-radius: 9999px; }
+body.scrolled-mode .nav-desktop-container { border: none; }
+
+/* ========================================= */
+/* 4. FIX: NAVIGASI & KLIK (Z-Index) */
+/* ========================================= */
+.nav-island a, .nav-island button, .nav-island img, .nav-island span, .nav-desktop-container { position: relative; z-index: 9999 !important; pointer-events: auto !important; }
+#home a, #home button { position: relative; z-index: 50 !important; pointer-events: auto !important; }
+#nav-marker { z-index: 40 !important; }
+#mobile-menu { position: relative; z-index: 9998 !important; }
+
+/* ========================================= */
+/* 5. ANIMATIONS & EFFECTS (GSAP & CSS) */
+/* ========================================= */
+@keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+.animate-float { animation: float 6s ease-in-out infinite; }
+@keyframes bounceSlow { 0%, 100% { transform: translateY(25%) translateX(25%); } 50% { transform: translateY(15%) translateX(25%); } }
+.animate-bounce-slow { animation: bounceSlow 3s ease-in-out infinite; }
+
+/* Spotlight Card Effect */
+.spotlight-card { position: relative; overflow: hidden; background-color: rgba(20, 20, 20, 0.6); z-index: 1; transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease; }
+.spotlight-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; border-radius: inherit; padding: 1px; background: radial-gradient(800px circle at var(--mouse-x) var(--mouse-y), rgba(250, 204, 21, 0.6), transparent 40%); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; pointer-events: none; z-index: 10; opacity: 0; transition: opacity 0.5s; }
+.spotlight-card:hover::before { opacity: 1; }
+
+/* ========================================= */
+/* 6. ANIMASI BENTUK BLOB (PROFILE IMAGE) */
+/* ========================================= */
+@keyframes morphShape { 0% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; } 50% { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; } 100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; } }
+@keyframes glowingBorder { 0% { box-shadow: 0 0 15px 5px rgba(250, 204, 21, 0.7), inset 0 0 10px rgba(250, 204, 21, 0.3); border-color: rgba(250, 204, 21, 0.8); } 50% { box-shadow: 0 0 25px 10px rgba(250, 204, 21, 0.4), inset 0 0 15px rgba(250, 204, 21, 0.2); border-color: rgba(250, 204, 21, 0.5); } 100% { box-shadow: 0 0 15px 5px rgba(250, 204, 21, 0.7), inset 0 0 10px rgba(250, 204, 21, 0.3); border-color: rgba(250, 204, 21, 0.8); } }
+.morphing-image { animation: morphShape 10s ease-in-out infinite alternate, glowingBorder 4s ease-in-out infinite alternate; overflow: hidden; border: 3px solid transparent; transition: all 0.5s ease-in-out; }
+.morphing-image:hover { box-shadow: 0 0 30px 15px rgba(250, 204, 21, 0.9), inset 0 0 20px rgba(250, 204, 21, 0.5) !important; border-color: #FACC15 !important; animation-play-state: running, paused; }
+
+/* ========================================= */
+/* 7. SECTION: EDUCATION & ORGANIZATION */
+/* ========================================= */
+#organization .relative.border-l-2 { border-left-color: rgba(255, 255, 255, 0.08); margin-left: 1rem; padding-bottom: 2rem; }
+#organization .absolute.-left-\[9px\] { background-color: #0a0a0a; border-width: 2px; z-index: 10; box-shadow: 0 0 0 4px #0a0a0a; }
+#organization .spotlight-card:hover { transform: translateX(5px); border-color: rgba(250, 204, 21, 0.4); box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5); }
+#organization .group:hover .spotlight-card { transform: translateX(5px); }
+#organization h3 { line-height: 1.4; margin-bottom: 0.25rem; }
+#organization p.text-brand-yellow { font-weight: 600; letter-spacing: 0.02em; }
+#organization span.text-xs { display: inline-block; background: rgba(255, 255, 255, 0.05); padding: 0.25rem 0.5rem; border-radius: 4px; margin-top: 0.5rem; margin-bottom: 0.75rem; }
+#organization p.leading-relaxed { line-height: 1.6; }
+
+/* ========================================= */
+/* EMERGENCY FIX: INTERAKSI TOMBOL */
+/* ========================================= */
+
+/* Pastikan semua elemen interaktif di navbar ada di layer paling atas */
+.nav-island a, 
+.nav-island button, 
+.nav-island img, 
+.nav-desktop-container, 
+#mobile-menu {
+    position: relative;
+    z-index: 100 !important; /* Di atas efek glow */
+    pointer-events: auto !important; /* Paksa bisa diklik */
+    cursor: pointer;
+}
+
+/* Pastikan efek glow tidak memblokir klik */
+.nav-island::before,
+.nav-island::after {
+    pointer-events: none !important;
+    z-index: 1 !important; /* Layer rendah */
+}
+
+/* Pastikan teks menu terlihat jelas di atas layer */
+.nav-link {
+    position: relative;
+    z-index: 101 !important;
+}
+
+/* Marker kuning di bawah teks menu */
+#nav-marker {
+    z-index: 50 !important;
+}

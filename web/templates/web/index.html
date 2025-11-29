@@ -1,0 +1,357 @@
+{% extends 'web/base.html' %}
+{% load static %}
+
+{% block content %}
+
+<section id="home" class="min-h-screen flex items-center pt-32 pb-20 relative overflow-hidden">
+    <div class="max-w-6xl mx-auto px-6 w-full grid lg:grid-cols-2 gap-12 items-center">
+        <div class="space-y-6 order-2 lg:order-1 gs-reveal">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-yellow/10 border border-brand-yellow/20 text-brand-yellow text-xs font-bold uppercase tracking-wider">
+                <span class="w-2 h-2 rounded-full bg-brand-yellow animate-pulse"></span>
+                Open to Work
+            </div>
+
+            <h1 class="text-5xl lg:text-7xl font-extrabold text-white leading-tight" data-translate-key="hero_title" data-text-split>
+                {{ trans.hero_title.id|default:"Faza Wahyu Adi Putra" }}
+            </h1>
+            
+            <h2 class="text-2xl lg:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-brand-yellow to-white" data-translate-key="hero_subtitle">
+                {{ trans.hero_subtitle.id|default:"IT Support & Developer" }}
+            </h2>
+
+            <p class="text-gray-400 text-lg max-w-lg leading-relaxed">
+                Bridging Hardware Issues with Software Solutions.
+            </p>
+
+            <div class="flex flex-wrap gap-3">
+                <div class="px-4 py-2 rounded-lg bg-dark-800 border border-white/10 text-sm text-gray-300 flex items-center gap-2">
+                    <i data-feather="tool" class="w-4 h-4 text-brand-yellow"></i> 
+                    <span data-translate-key="skill_subcat_it">IT Infrastructure</span>
+                </div>
+                <div class="px-4 py-2 rounded-lg bg-dark-800 border border-white/10 text-sm text-gray-300 flex items-center gap-2">
+                    <i data-feather="code" class="w-4 h-4 text-brand-yellow"></i> 
+                    <span data-translate-key="skill_item_frontend_backend">Python Dev</span>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap gap-4 pt-4">
+                <a href="#" class="px-8 py-3 bg-brand-yellow text-black font-bold rounded-xl hover:bg-yellow-300 transition-transform hover:-translate-y-1 shadow-lg shadow-brand-yellow/20">
+                    <span data-translate-key="hero_cv_button">{{ trans.hero_cv_button.id|default:"Download CV" }}</span>
+                </a>
+                <a href="#about" class="px-8 py-3 bg-transparent border border-white/20 text-white font-bold rounded-xl hover:bg-white/5 transition-colors">
+                    <span data-translate-key="hero_about_button">{{ trans.hero_about_button.id|default:"About Me" }}</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="order-1 lg:order-2 flex justify-center relative gs-reveal">
+            <div class="relative w-72 h-72 lg:w-96 lg:h-96 animate-float">
+                <div class="absolute inset-0 bg-gradient-to-tr from-brand-yellow to-transparent rounded-full opacity-20 blur-3xl"></div>
+                <img src="{% static 'web/img/profile.jpg' %}" 
+                     onerror="this.src='https://placehold.co/400x400/171717/FACC15?text=Faza'" 
+                     alt="Profile" 
+                     class="relative w-full h-full object-cover morphing-image shadow-2xl rotate-3 hover:rotate-0 transition-transform duration-500 z-10">
+                
+                <div class="absolute bottom-0 right-0 translate-y-1/4 translate-x-1/4 z-20 p-4 rounded-2xl bg-dark-900/80 backdrop-blur-md border border-white/10 shadow-2xl flex gap-4 items-center animate-bounce-slow hover:bg-dark-800 transition-colors">
+                    <a href="https://github.com/fazawahyu-ap" target="_blank" class="text-gray-400 hover:text-brand-yellow transition-colors transform hover:scale-110">
+                        <i data-feather="github" class="w-6 h-6"></i>
+                    </a>
+                    <div class="w-px h-4 bg-white/20"></div>
+                    <a href="https://www.linkedin.com/in/faza-wap/" target="_blank" class="text-gray-400 hover:text-brand-yellow transition-colors transform hover:scale-110">
+                        <i data-feather="linkedin" class="w-6 h-6"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="about" class="py-24 bg-dark-800/50">
+    <div class="max-w-6xl mx-auto px-6">
+        <h2 class="text-3xl font-bold text-white mb-12 flex items-center gap-3 gs-reveal">
+            <i data-feather="coffee" class="text-brand-yellow w-8 h-8"></i>
+            <span data-translate-key="about_title">{{ trans.about_title.id|default:"Tentang Saya" }}</span>
+        </h2>
+
+        <div class="grid lg:grid-cols-3 gap-8 items-start">
+            
+            <div class="lg:col-span-1 space-y-4 gs-reveal sticky top-28">
+                <div class="bg-dark-900 border border-white/5 rounded-2xl p-4 flex items-center gap-4 spotlight-card group hover:border-brand-yellow/30 transition-colors">
+                    <div class="w-10 h-10 rounded-full bg-dark-800 flex items-center justify-center text-white border border-white/10 group-hover:text-brand-yellow transition-colors">
+                        <i data-feather="map-pin" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <p class="text-xs text-gray-500 uppercase font-bold mb-0.5" data-translate-key="about_location_label">Lokasi</p>
+                        <p class="text-sm text-gray-200 font-medium" data-translate-key="about_location_value">{{ trans.about_location_value.id }}</p>
+                    </div>
+                </div>
+
+                <a href="mailto:fazawahyu10@gmail.com" class="block bg-dark-900 border border-white/5 rounded-2xl p-4 flex items-center gap-4 spotlight-card group hover:border-brand-yellow/30 transition-colors">
+                    <div class="w-10 h-10 rounded-full bg-dark-800 flex items-center justify-center text-white border border-white/10 group-hover:text-brand-yellow transition-colors">
+                        <i data-feather="mail" class="w-5 h-5"></i>
+                    </div>
+                    <div class="overflow-hidden">
+                        <p class="text-xs text-gray-500 uppercase font-bold mb-0.5">Email</p>
+                        <p class="text-sm text-brand-yellow font-medium truncate">fazawahyu10@gmail.com</p>
+                    </div>
+                </a>
+
+                <div class="grid grid-cols-3 gap-3">
+                    <a href="https://x.com/faza_wap" target="_blank" class="bg-dark-900 border border-white/5 rounded-2xl p-4 flex justify-center items-center hover:bg-brand-yellow hover:text-black hover:border-brand-yellow transition-all duration-300 group">
+                        <i data-feather="twitter" class="w-5 h-5 group-hover:scale-110 transition-transform"></i>
+                    </a>
+                    <a href="https://www.instagram.com/faza_wap/" target="_blank" class="bg-dark-900 border border-white/5 rounded-2xl p-4 flex justify-center items-center hover:bg-brand-yellow hover:text-black hover:border-brand-yellow transition-all duration-300 group">
+                        <i data-feather="instagram" class="w-5 h-5 group-hover:scale-110 transition-transform"></i>
+                    </a>
+                    <a href="https://g.dev/faza-wap" target="_blank" class="bg-dark-900 border border-white/5 rounded-2xl p-4 flex justify-center items-center hover:bg-brand-yellow hover:text-black hover:border-brand-yellow transition-all duration-300 group">
+                        <i data-feather="code" class="w-5 h-5 group-hover:scale-110 transition-transform"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="lg:col-span-2 space-y-6 gs-reveal">
+                <div class="bg-dark-900 border border-white/5 rounded-2xl p-8 spotlight-card">
+                    <h3 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                        Hi, I'm <span class="text-brand-yellow">Faza.</span>
+                    </h3>
+                    <p class="text-gray-300 leading-relaxed text-base" data-translate-key="about_summary">
+                        {{ trans.about_summary.id }}
+                    </p>
+                </div>
+
+                <div class="bg-dark-900 border border-white/5 rounded-2xl p-6 relative overflow-hidden group hover:border-brand-yellow/20 transition-all">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-[50px] pointer-events-none"></div>
+                    <div class="flex flex-col sm:flex-row gap-5 items-start relative z-10">
+                        <div class="w-12 h-12 rounded-xl bg-dark-800 border border-white/10 flex items-center justify-center text-blue-400 flex-shrink-0">
+                            <i data-feather="award" class="w-6 h-6"></i>
+                        </div>
+                        <div class="flex-grow">
+                            <h4 class="text-lg font-bold text-white leading-tight mb-1" data-translate-key="achieve_1_title">
+                                {{ trans.achieve_1_title.id|default:"Tier 1 Merchandise Winner at #JuaraGCP Season 11" }}
+                            </h4>
+                            <p class="text-sm text-gray-500 mb-3">Google Cloud • <span data-translate-key="achieve_1_date">{{ trans.achieve_1_date.id|default:"Mei 2025" }}</span></p>
+                            <p class="text-sm text-gray-400 leading-relaxed mb-4" data-translate-key="achieve_1_desc">
+                                {{ trans.achieve_1_desc.id|default:"Menjadi salah satu peserta terbaik..." }}
+                            </p>
+                            <button class="inline-flex items-center gap-2 px-4 py-2 bg-dark-800 hover:bg-dark-700 text-sm text-brand-yellow font-medium rounded-lg border border-white/10 transition-colors">
+                                <i data-feather="image" class="w-4 h-4"></i>
+                                <span data-translate-key="achieve_gallery_button">View Images</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <a href="https://www.skills.google/public_profiles/9419b3af-c034-49bb-9527-7fbfbb5a6e69?qlcampaign=6s-EDUCR-46" target="_blank" class="flex items-center justify-between bg-dark-900 border border-white/5 rounded-2xl p-5 hover:bg-dark-800 hover:border-brand-yellow/30 transition-all group">
+                    <div class="flex items-center gap-4">
+                        <i data-feather="cloud" class="text-gray-400 group-hover:text-brand-yellow transition-colors"></i>
+                        <span class="font-bold text-gray-200 group-hover:text-white" data-translate-key="profiles_skills_title">Google Cloud Skills Boost</span>
+                    </div>
+                    <i data-feather="external-link" class="w-5 h-5 text-gray-500 group-hover:text-brand-yellow transition-colors"></i>
+                </a>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="experience" class="py-24 relative">
+    <div class="max-w-6xl mx-auto px-6">
+        <h2 class="text-3xl font-bold text-white mb-12 flex items-center gap-3 gs-reveal">
+            <i data-feather="trending-up" class="text-brand-yellow w-8 h-8"></i>
+            <span data-translate-key="work_title">{{ trans.work_title.id|default:"Pengalaman Kerja" }}</span>
+        </h2>
+
+        <div class="grid md:grid-cols-2 gap-6">
+            {% for exp in experiences %}
+            <div class="bg-dark-800 border border-white/5 rounded-2xl p-8 hover:border-brand-yellow/30 transition-all group spotlight-card gs-reveal">
+                <div class="flex justify-between items-start mb-4">
+                    <div class="p-3 bg-brand-yellow/10 rounded-lg text-brand-yellow group-hover:bg-brand-yellow group-hover:text-black transition-colors">
+                        <i data-feather="briefcase"></i>
+                    </div>
+                    <span class="text-xs font-mono text-gray-500 border border-white/10 px-3 py-1 rounded-full">{{ exp.period }}</span>
+                </div>
+                <h3 class="text-xl font-bold text-white mb-1">{{ exp.role_id }}</h3>
+                <p class="text-brand-yellow text-sm mb-6">{{ exp.company }}</p>
+                <ul class="space-y-2">
+                    {% for point in exp.get_responsibilities_id_list %}
+                    <li class="flex items-start gap-3 text-sm text-gray-400">
+                        <span class="mt-1.5 w-1.5 h-1.5 bg-brand-yellow rounded-full flex-shrink-0"></span>
+                        {{ point }}
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<section id="projects" class="py-24 bg-dark-800/50">
+    <div class="max-w-6xl mx-auto px-6">
+        <h2 class="text-3xl font-bold text-white mb-12 flex items-center gap-3 gs-reveal">
+            <i data-feather="layers" class="text-brand-yellow w-8 h-8"></i>
+            <span data-translate-key="projects_title">{{ trans.projects_title.id|default:"Proyek Pilihan" }}</span>
+        </h2>
+
+        <div class="grid md:grid-cols-3 gap-8">
+            {% for project in projects %}
+            <div class="bg-dark-900 border border-white/5 rounded-2xl overflow-hidden group hover:shadow-2xl hover:shadow-brand-yellow/5 transition-all duration-500 spotlight-card gs-reveal">
+                <div class="relative h-48 overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-t from-dark-900 to-transparent z-10 opacity-60"></div>
+                    <img src="{{ project.image|default:'https://placehold.co/600x400/171717/FACC15?text=Project' }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                    <div class="absolute top-4 right-4 z-20 flex gap-2">
+                        {% if project.github_url %}
+                        <a href="{{ project.github_url }}" class="p-2 bg-dark-900/80 backdrop-blur rounded-full text-white hover:text-brand-yellow transition-colors"><i data-feather="github" class="w-4 h-4"></i></a>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="p-6">
+                    <div class="text-brand-yellow text-xs font-bold uppercase tracking-wider mb-2">{{ project.tech_stack }}</div>
+                    <h3 class="text-xl font-bold text-white mb-3 group-hover:text-brand-yellow transition-colors">{{ project.title_id }}</h3>
+                    <p class="text-gray-400 text-sm line-clamp-3 mb-6">{{ project.desc_id }}</p>
+                    <div class="flex gap-3">
+                         <button class="inline-flex items-center gap-2 text-sm font-bold text-white hover:text-brand-yellow transition-colors">
+                            <i data-feather="image" class="w-4 h-4"></i> <span data-translate-key="proj_photo_button">{{ trans.proj_photo_button.id|default:"Foto" }}</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<section id="skills" class="py-24 relative">
+    <div class="max-w-6xl mx-auto px-6 grid lg:grid-cols-3 gap-12">
+        <div class="lg:col-span-2 space-y-8 gs-reveal">
+            <h2 class="text-3xl font-bold text-white flex items-center gap-3">
+                <i data-feather="terminal" class="text-brand-yellow w-8 h-8"></i>
+                <span data-translate-key="skills_certs_title">{{ trans.skills_certs_title.id }}</span>
+            </h2>
+            
+            <div class="bg-dark-800 border border-white/5 rounded-2xl p-6 spotlight-card">
+                <h4 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                    <i data-feather="cpu" class="text-brand-yellow"></i> 
+                    <span data-translate-key="skills_cat_tech">Technical</span>
+                </h4>
+                <div class="flex flex-wrap gap-2">
+                    <span class="px-3 py-1.5 bg-white/5 rounded-lg text-sm text-gray-300 border border-white/5 hover:border-brand-yellow transition-colors">Hardware Troubleshooting</span>
+                    <span class="px-3 py-1.5 bg-white/5 rounded-lg text-sm text-gray-300 border border-white/5 hover:border-brand-yellow transition-colors">Networking</span>
+                    <span class="px-3 py-1.5 bg-white/5 rounded-lg text-sm text-gray-300 border border-white/5 hover:border-brand-yellow transition-colors">Python Dev</span>
+                </div>
+            </div>
+
+             <div class="bg-dark-800 border border-white/5 rounded-2xl p-6 spotlight-card">
+                <h4 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                    <i data-feather="command" class="text-brand-yellow"></i> 
+                    <span data-translate-key="skill_subcat_tools">Tools</span>
+                </h4>
+                <div class="flex flex-wrap gap-2">
+                    <span class="px-3 py-1.5 bg-white/5 rounded-lg text-sm text-gray-300">VS Code</span>
+                    <span class="px-3 py-1.5 bg-white/5 rounded-lg text-sm text-gray-300">Cisco Packet Tracer</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="gs-reveal">
+            <h2 class="text-3xl font-bold text-white flex items-center gap-3 mb-8">
+                <i data-feather="award" class="text-brand-yellow w-8 h-8"></i>
+                <span data-translate-key="cert_title">Certifications</span>
+            </h2>
+            <div class="bg-gradient-to-br from-brand-yellow/10 to-dark-900 border border-brand-yellow/20 rounded-2xl p-8 text-center spotlight-card">
+                <div class="w-16 h-16 bg-brand-yellow/20 rounded-xl flex items-center justify-center mx-auto mb-6 text-brand-yellow">
+                    <i data-feather="award" class="w-8 h-8"></i>
+                </div>
+                <h3 class="text-xl font-bold text-white mb-2" data-translate-key="cert_title">Sertifikasi</h3>
+                <p class="text-gray-400 text-sm mb-6" data-translate-key="cert_desc">Komitmen saya untuk terus belajar.</p>
+                <a href="#" class="inline-block w-full py-3 bg-brand-yellow text-black font-bold rounded-xl hover:bg-yellow-300 transition-colors">
+                    <span data-translate-key="cert_button">Lihat Semua</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="organization" class="py-24 bg-dark-800/50">
+    <div class="max-w-4xl mx-auto px-6">
+        <h2 class="text-3xl font-bold text-center text-white mb-20 gs-reveal" data-translate-key="edu_org_title">
+            {{ trans.edu_org_title.id|default:"Education & Organization" }}
+        </h2>
+        
+        <div class="relative border-l-2 border-white/10 ml-4 md:ml-6 space-y-16">
+            
+            <div class="relative">
+                <div class="absolute -left-[2.35rem] -top-10 flex items-center gap-3 gs-reveal">
+                    <div class="w-10 h-10 rounded-full bg-dark-900 border-2 border-brand-yellow flex items-center justify-center shadow-[0_0_15px_rgba(250,204,21,0.3)] z-10">
+                        <i data-feather="book-open" class="text-brand-yellow w-4 h-4"></i>
+                    </div>
+                    <span class="text-lg font-bold text-brand-yellow tracking-wide uppercase">Pendidikan</span>
+                </div>
+
+                {% for edu in educations %}
+                <div class="relative pl-12 mt-8 gs-reveal group">
+                    <div class="absolute -left-[9px] top-6 w-5 h-5 rounded-full bg-dark-900 border-2 border-white/20 group-hover:border-brand-yellow group-hover:scale-125 transition-all duration-300 z-10"></div>
+                    
+                    <div class="bg-dark-900 p-8 rounded-2xl border border-white/5 spotlight-card hover:border-brand-yellow/30 transition-all relative overflow-hidden">
+                        <i data-feather="book" class="absolute -right-4 -bottom-4 w-32 h-32 text-white/5 group-hover:text-brand-yellow/5 transition-colors rotate-12 pointer-events-none"></i>
+                        
+                        <div class="relative z-10">
+                            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 mb-2">
+                                <h3 class="text-xl font-bold text-white group-hover:text-brand-yellow transition-colors">{{ edu.institution }}</h3>
+                                <span class="text-xs font-mono text-gray-400 bg-white/5 px-3 py-1 rounded-full border border-white/5 whitespace-nowrap">{{ edu.period }}</span>
+                            </div>
+                            <p class="text-lg text-brand-yellow font-medium mb-4">{{ edu.major_id }}</p>
+                            {% if edu.description_id %}
+                                <p class="text-sm text-gray-400 leading-relaxed border-l-2 border-white/10 pl-4">{{ edu.description_id }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="relative pt-8">
+                <div class="absolute -left-[2.35rem] -top-2 flex items-center gap-3 gs-reveal">
+                    <div class="w-10 h-10 rounded-full bg-dark-900 border-2 border-blue-500 flex items-center justify-center shadow-[0_0_15px_rgba(59,130,246,0.3)] z-10">
+                        <i data-feather="users" class="text-blue-500 w-4 h-4"></i>
+                    </div>
+                    <span class="text-lg font-bold text-blue-500 tracking-wide uppercase">Organisasi</span>
+                </div>
+
+                {% for org in organizations %}
+                <div class="relative pl-12 mt-8 gs-reveal group">
+                    <div class="absolute -left-[9px] top-6 w-5 h-5 rounded-full bg-dark-900 border-2 border-white/20 group-hover:border-blue-500 group-hover:scale-125 transition-all duration-300 z-10"></div>
+                    
+                    <div class="bg-dark-900 p-8 rounded-2xl border border-white/5 spotlight-card hover:border-blue-500/30 transition-all relative overflow-hidden">
+                        <i data-feather="users" class="absolute -right-4 -bottom-4 w-32 h-32 text-white/5 group-hover:text-blue-500/5 transition-colors rotate-12 pointer-events-none"></i>
+                        
+                        <div class="relative z-10">
+                            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 mb-2">
+                                <h3 class="text-xl font-bold text-white group-hover:text-blue-400 transition-colors">{{ org.name }}</h3>
+                                <span class="text-xs font-mono text-gray-400 bg-white/5 px-3 py-1 rounded-full border border-white/5 whitespace-nowrap">{{ org.period }}</span>
+                            </div>
+                            <p class="text-lg text-blue-400 font-medium mb-4">{{ org.role_id }}</p>
+                            <p class="text-sm text-gray-400 leading-relaxed">{{ org.description_id }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+        </div>
+    </div>
+</section>
+
+<section id="contact" class="py-24 text-center">
+    <div class="max-w-2xl mx-auto px-6 gs-reveal">
+        <h2 class="text-4xl font-bold text-white mb-6">Let's Work Together</h2>
+        <p class="text-gray-400 mb-10 text-lg" data-translate-key="footer_cta">
+            {{ trans.footer_cta.id|default:"Tertarik berkolaborasi?" }}
+        </p>
+        <a href="mailto:fazawahyu10@gmail.com" class="inline-flex items-center gap-3 px-8 py-4 bg-brand-yellow text-black font-bold rounded-full hover:scale-105 transition-transform shadow-xl shadow-brand-yellow/20">
+            <i data-feather="mail"></i> fazawahyu10@gmail.com
+        </a>
+    </div>
+</section>
+
+{% endblock %}
