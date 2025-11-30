@@ -98,3 +98,13 @@ class Skill(models.Model):
 
     def __str__(self):
         return self.name_en
+    
+class Certificate(models.Model):
+    title = models.CharField(max_length=200)  # <--- Geser ke kanan (Tekan Tab)
+    issuer = models.CharField(max_length=200)
+    date = models.DateField()
+    url = models.URLField(blank=True, null=True)
+    image = models.ImageField(upload_to='certificates/', blank=True, null=True)
+
+    def __str__(self):
+        return self.title
