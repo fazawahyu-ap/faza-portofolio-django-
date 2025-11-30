@@ -1,9 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     
-    // --- 0. REGISTER GSAP PLUGIN ---
+    // --- 0. REGISTER PLUGIN ---
     gsap.registerPlugin(Observer);
-    
-    // Init Feather Icons
     if (typeof feather !== 'undefined') feather.replace();
 
     // ===========================================
@@ -17,7 +15,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const tl = gsap.timeline({
         onComplete: () => {
-            initFullPageScroll(); // Mulai scroll logic setelah loading
+            initFullPageScroll();
         }
     });
 
@@ -39,7 +37,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
     // ===========================================
-    // 2. FULL PAGE SCROLL LOGIC (MOBILE OPTIMIZED)
+    // 2. FULL PAGE SCROLL LOGIC
     // ===========================================
     function initFullPageScroll() {
         const sections = document.querySelectorAll(".fp-section");
@@ -49,12 +47,10 @@ document.addEventListener('DOMContentLoaded', function() {
         let isAnimating = false;
         const totalSections = sections.length;
 
-        // Set Initial State
         gsap.set(sections, { autoAlpha: 0, zIndex: 0 });
         gsap.set(sections[0], { autoAlpha: 1, zIndex: 1 });
         updateNavbarState(0);
 
-        // Fungsi Ganti Slide
         function gotoSection(index) {
             if (index === currentIndex || index < 0 || index >= totalSections || isAnimating) return;
             
@@ -74,7 +70,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
 
-            // Animasi Keluar
             tlTransition.to(currentSection, {
                 autoAlpha: 0,
                 scale: 0.95,
@@ -83,7 +78,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 ease: "power3.inOut"
             }, 0);
 
-            // Animasi Masuk
             tlTransition.fromTo(nextSection, {
                 autoAlpha: 0,
                 scale: 1.05,
@@ -97,19 +91,16 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 0);
         }
 
-        // Observer (Scroll Handler)
         Observer.create({
             type: "wheel,touch,pointer",
             wheelSpeed: -1,
             onDown: () => !isAnimating && gotoSection(currentIndex - 1),
             onUp: () => !isAnimating && gotoSection(currentIndex + 1),
-            // OPTIMASI MOBILE:
-            tolerance: 50, // Perlu swipe agak panjang baru ganti slide (biar gak sensitif)
+            tolerance: 50, 
             preventDefault: true,
-            ignore: ".scrollable-content" // PENTING: Biarkan user scroll teks di dalam konten dulu
+            ignore: ".scrollable-content"
         });
 
-        // Navbar Click Handler
         const sectionIds = Array.from(sections).map(sec => sec.id);
 
         navLinks.forEach(link => {
@@ -124,7 +115,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     e.preventDefault();
                     gotoSection(targetIndex);
 
-                    // Tutup menu mobile jika sedang terbuka
                     if(document.body.classList.contains('menu-open')) {
                         toggleMenu(); 
                     }
@@ -143,7 +133,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
 
-            // Efek Shrink Navbar
             if (index > 0) {
                 document.body.classList.add('scrolled-mode');
             } else {
@@ -171,7 +160,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             gsap.to(bar1, { rotation: 45, y: 4, duration: 0.3 });
             gsap.to(bar2, { rotation: -45, y: -4, duration: 0.3 });
-            gsap.to(navIsland, { height: "auto", borderRadius: "2rem", duration: 0.5, ease: "power3.out", backgroundColor: "rgba(10, 10, 10, 0.98)" });
+            gsap.to(navIsland, { height: "auto", borderRadius: "2rem", duration: 0.5, ease: "power3.out", backgroundColor: "rgba(10, 10, 10, 0.95)" });
             gsap.fromTo(".mobile-link", { y: 10, opacity: 0 }, { y: 0, opacity: 1, duration: 0.3, stagger: 0.05, delay: 0.2 });
         } else {
             document.body.classList.remove('menu-open');
@@ -211,8 +200,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
     if (typeof translations === 'undefined' || !translations) {
         console.error("Translation data MISSING from Django View!");
-    } else {
-        console.log("Translations loaded.");
     }
 
     let currentLang = localStorage.getItem('selected_lang') || 'id'; 
@@ -223,14 +210,14 @@ document.addEventListener('DOMContentLoaded', function() {
         localStorage.setItem('selected_lang', lang);
         currentLang = lang;
 
-        // 1. Update Tombol Navbar
+        // 1. Tombol
         const btnText = lang.toUpperCase(); 
         const deskBtnText = document.getElementById('lang-btn-text');
         const mobBtnText = document.getElementById('mobile-lang-text');
         if(deskBtnText) deskBtnText.textContent = btnText;
         if(mobBtnText) mobBtnText.textContent = btnText;
 
-        // 2. Toggle Konten Database (.lang-id vs .lang-en)
+        // 2. Class Toggle (.lang-id / .lang-en)
         const idElements = document.querySelectorAll('.lang-id');
         const enElements = document.querySelectorAll('.lang-en');
 
@@ -242,7 +229,7 @@ document.addEventListener('DOMContentLoaded', function() {
             enElements.forEach(el => el.classList.remove('hidden'));
         }
 
-        // 3. Update Teks Statis (data-translate-key)
+        // 3. Static Keys
         const data = translations[lang];
         if (data) {
             const elements = document.querySelectorAll('[data-translate-key]');
@@ -250,7 +237,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 const key = el.getAttribute('data-translate-key');
                 if (data[key]) {
                     gsap.to(el, { opacity: 0, duration: 0.15, onComplete: () => {
-                        // Cek apakah elemen input form (placeholder) atau teks biasa
                         if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
                             el.setAttribute('placeholder', data[key]);
                         } else {
@@ -262,14 +248,11 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
         
-        // Re-init feather icons
         setTimeout(() => { if (typeof feather !== 'undefined') feather.replace(); }, 200);
     };
 
-    // Jalankan bahasa awal
     switchLanguage(currentLang);
 
-    // Event Listener Tombol Bahasa
     const toggleLang = (e) => {
         e.preventDefault();
         const btn = e.currentTarget;
@@ -282,6 +265,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const deskLangBtn = document.getElementById('lang-toggle-btn');
     const mobLangBtn = document.getElementById('mobile-lang-btn');
+    
     if(deskLangBtn) deskLangBtn.addEventListener('click', toggleLang);
     if(mobLangBtn) mobLangBtn.addEventListener('click', toggleLang);
 
@@ -300,7 +284,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const statusMsg = document.getElementById('fb_status');
             const originalText = btnText.innerText;
 
-            // State Loading
             btn.disabled = true;
             btnText.innerText = "Sending..."; 
             btn.classList.add('opacity-70', 'cursor-not-allowed');
@@ -339,23 +322,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 statusMsg.classList.remove('hidden', 'text-green-500', 'text-red-500');
                 
                 if (response.ok && result.status === 'success') {
-                    // Sukses
                     statusMsg.innerText = msgSuccess;
                     statusMsg.classList.add('text-green-500');
                     feedbackForm.reset(); 
                 } else {
-                    // Gagal dari server
                     throw new Error(result.message || msgError);
                 }
 
             } catch (error) {
-                // Gagal koneksi
                 statusMsg.innerText = msgError + " (" + error.message + ")";
                 statusMsg.classList.add('text-red-500');
             } finally {
-                // Reset Tombol
                 btn.disabled = false;
-                // Kembalikan teks tombol sesuai bahasa aktif dari database
                 if (translations && translations[currentLang] && translations[currentLang]['footer_form_button']) {
                      btnText.innerText = translations[currentLang]['footer_form_button'];
                 } else {
@@ -363,11 +341,59 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 
                 btn.classList.remove('opacity-70', 'cursor-not-allowed');
-                
-                // Hilangkan pesan status setelah 5 detik
                 setTimeout(() => { statusMsg.classList.add('hidden'); }, 5000);
             }
         });
     }
+
+    // ===========================================
+    // 7. MODAL POPUP (PRIVACY & TERMS)
+    // ===========================================
+    
+    function setupModal(triggerId, modalId) {
+        const trigger = document.getElementById(triggerId);
+        const modal = document.getElementById(modalId);
+        
+        if (!trigger || !modal) return;
+
+        const modalContent = modal.querySelector('div'); 
+        const closeBtns = modal.querySelectorAll('.close-modal');
+
+        trigger.addEventListener('click', (e) => {
+            e.preventDefault();
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            
+            gsap.to(modal, { opacity: 1, duration: 0.3 });
+            gsap.to(modalContent, { scale: 1, duration: 0.3, ease: "back.out(1.2)" });
+        });
+
+        const closeModal = () => {
+            gsap.to(modal, { opacity: 0, duration: 0.2 });
+            gsap.to(modalContent, { 
+                scale: 0.95, 
+                duration: 0.2, 
+                onComplete: () => {
+                    modal.classList.add('hidden');
+                    modal.classList.remove('flex');
+                } 
+            });
+        };
+
+        closeBtns.forEach(btn => btn.addEventListener('click', closeModal));
+
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeModal();
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === "Escape" && !modal.classList.contains('hidden')) {
+                closeModal();
+            }
+        });
+    }
+
+    setupModal('btn-privacy', 'modal-privacy');
+    setupModal('btn-terms', 'modal-terms');
 
 });
