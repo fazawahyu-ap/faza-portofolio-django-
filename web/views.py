@@ -1,5 +1,7 @@
 import json
 from django.shortcuts import render
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
 from .models import (
     Project, 
     WorkExperience, 
@@ -8,14 +10,16 @@ from .models import (
     Skill, 
     Translation, 
     SiteSetting,
-    Certificate
+    Certificate,
+    Feedback # Pastikan model Feedback sudah dibuat
 )
 
 def index(request):
-    # 1. AMBIL DATA DARI DATABASE
+    # ==========================================
+    # 1. AMBIL DATA UTAMA (Queryset)
+    # ==========================================
     projects = Project.objects.all().order_by('order', '-created_at')
     
-    # Gunakan try-except untuk menghindari error jika tabel belum dimigrasi sempurna
     try:
         experiences = WorkExperience.objects.all().order_by('-start_date')
     except:
@@ -34,42 +38,49 @@ def index(request):
     skills = Skill.objects.all()
     certificates = Certificate.objects.all()
 
-    # 2. PROSES TRANSLASI (PERBAIKAN DI SINI)
+    # ==========================================
+    # 2. PROSES TRANSLASI (Untuk JS & Template)
+    # ==========================================
     trans_qs = Translation.objects.all()
-    trans_dict = {}
+    trans_dict = {
+        'id': {},
+        'en': {}
+    }
     
+    # Format JSON untuk JS: {'id': {'key': 'val'}, 'en': {'key': 'val'}}
     for t in trans_qs:
-        trans_dict[t.key] = {
-            'id': t.val_id,   # <--- SUDAH DIPERBAIKI (val_id)
-            'en': t.val_en    # <--- SUDAH DIPERBAIKI (val_en)
-        }
+        trans_dict['id'][t.key] = t.val_id
+        trans_dict['en'][t.key] = t.val_en
 
     translations_json = json.dumps(trans_dict)
 
-# 3. SETTING TAMBAHAN
-    maintenance_mode = False
-    cv_url = "#" # Default jika belum diisi di admin
+    # ==========================================
+    # 3. SITE SETTINGS
+    # ==========================================
+    cv_url = "#"
     cert_url = "#"
+    gdev_url = "#"
+    cloud_skill_url = "#"
+    maintenance_mode = False
 
     try:
-        # Cek Maintenance Mode
-        mt_setting = SiteSetting.objects.filter(key='maintenance_mode').first()
-        if mt_setting and mt_setting.value.lower() == 'true':
-            maintenance_mode = True
-            
-        # AMBIL LINK CV DARI DATABASE (Kode Baru)
-        cv_setting = SiteSetting.objects.filter(key='cv_url').first()
-        if cv_setting:
-            cv_url = cv_setting.value
+        all_settings = SiteSetting.objects.all()
+        settings_map = {s.key: s.value for s in all_settings}
 
-        # Ambil Link Sertifikat (KODE BARU DISINI)
-        cert_setting = SiteSetting.objects.filter(key='cert_url').first()
-        if cert_setting:
-            cert_url = cert_setting.value
-    except:
-        pass
+        if 'maintenance_mode' in settings_map:
+            maintenance_mode = settings_map['maintenance_mode'].lower() == 'true'
+        
+        cv_url = settings_map.get('cv_url', '#')
+        cert_url = settings_map.get('cert_url', '#')
+        gdev_url = settings_map.get('gdev_url', '#') 
+        cloud_skill_url = settings_map.get('cloud_skill_url', '#')
 
+    except Exception as e:
+        print(f"Error fetching settings: {e}")
+
+    # ==========================================
     # 4. SUSUN CONTEXT
+    # ==========================================
     context = {
         'projects': projects,
         'experiences': experiences,
@@ -77,14 +88,37 @@ def index(request):
         'organizations': organizations,
         'skills': skills,
         'certificates': certificates,
-        'trans': trans_dict,
+        
         'translations_json': translations_json,
-        'maintenance_mode': maintenance_mode,
-        'cv_url': cv_url, # <--- JANGAN LUPA TAMBAHKAN INI
+        'trans': trans_dict['id'], # Default Bahasa Indonesia untuk render awal
+        
+        'cv_url': cv_url,
         'cert_url': cert_url,
+        'gdev_url': gdev_url,
+        'cloud_skill_url': cloud_skill_url,
+        
+        'maintenance_mode': maintenance_mode,
     }
-    # 5. RENDER
+
     if maintenance_mode:
         return render(request, 'web/maintenance.html', context)
         
     return render(request, 'web/index.html', context)
+
+# View Khusus untuk AJAX Feedback Form
+@require_POST
+def submit_feedback(request):
+    try:
+        data = json.loads(request.body)
+        name = data.get('name')
+        email = data.get('email')
+        message = data.get('message')
+
+        if not name or not email or not message:
+            return JsonResponse({'status': 'error', 'message': 'Semua kolom wajib diisi!'}, status=400)
+
+        Feedback.objects.create(name=name, email=email, message=message)
+        return JsonResponse({'status': 'success', 'message': 'Pesan berhasil dikirim!'})
+
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=500)

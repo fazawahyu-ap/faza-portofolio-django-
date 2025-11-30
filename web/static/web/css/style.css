@@ -1,670 +1,179 @@
 /* ========================================= */
 /* 1. GLOBAL & SETUP */
 /* ========================================= */
-html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow-y: auto; overflow-x: hidden; background-color: #0a0a0a; overscroll-behavior: none; }
+html, body { 
+    margin: 0; 
+    padding: 0; 
+    width: 100%; 
+    height: 100%; 
+    overflow: hidden !important; 
+    background-color: #0a0a0a; 
+    overscroll-behavior: none;
+    -webkit-tap-highlight-color: transparent; /* Hilangkan highlight biru saat tap di mobile */
+}
 
 /* Custom Scrollbar */
-::-webkit-scrollbar { width: 8px; }
-::-webkit-scrollbar-track { background: #0a0a0a; }
-::-webkit-scrollbar-thumb { background: #262626; border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: #FACC15; }
-.no-scrollbar::-webkit-scrollbar { width: 6px; }
-.no-scrollbar::-webkit-scrollbar-track { background: transparent; }
-.no-scrollbar::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
-.no-scrollbar::-webkit-scrollbar-thumb:hover { background: #FACC15; }
+.scrollable-content::-webkit-scrollbar { width: 4px; } /* Lebih tipis di mobile */
+.scrollable-content::-webkit-scrollbar-track { background: transparent; }
+.scrollable-content::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
 
 /* ========================================= */
-/* 2. FLOATING NAVBAR (DYNAMIC ISLAND) */
+/* 2. FULL PAGE SECTION LOGIC */
 /* ========================================= */
-.nav-island { position: relative; width: 100%; max-width: 56rem; height: auto; background-color: rgba(10, 10, 10, 0.7); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.6); z-index: 50; overflow: hidden; transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s ease, max-width 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
-.nav-island::before { content: ""; position: absolute; inset: 0; border-radius: 2rem; padding: 2px; background: linear-gradient(90deg, #FACC15 0%, rgba(250, 204, 21, 0) 30%, rgba(250, 204, 21, 0) 70%, #FACC15 100%); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; pointer-events: none; animation: borderBreathe 4s ease-in-out infinite; z-index: 1 !important; }
-.nav-island::after { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 9999px; background: linear-gradient(90deg, rgba(250, 204, 21, 0.15) 0%, transparent 40%, transparent 60%, rgba(250, 204, 21, 0.15) 100%); z-index: -1; filter: blur(10px); pointer-events: none; }
+.fp-section {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    visibility: hidden; 
+    opacity: 0;
+    z-index: 0;
+    background-color: #0a0a0a;
+}
+
+.scrollable-content {
+    width: 100%;
+    height: 100%;
+    overflow-y: auto; 
+    overflow-x: hidden;
+    padding-top: 6rem; 
+    padding-bottom: 2rem;
+    box-sizing: border-box;
+    -webkit-overflow-scrolling: touch; /* Smooth scroll native di iOS */
+}
+
+.center-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100%;
+}
+
+/* ========================================= */
+/* 3. NAVBAR STYLES */
+/* ========================================= */
+.nav-island { 
+    position: relative; 
+    width: 100%; 
+    max-width: 56rem; 
+    height: auto; 
+    background-color: rgba(10, 10, 10, 0.85); 
+    backdrop-filter: blur(20px); 
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.08); 
+    box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.6); 
+    z-index: 50; 
+    transition: all 0.5s ease;
+}
+
+/* Efek Border Bernafas */
+.nav-island::before { 
+    content: ""; position: absolute; inset: 0; border-radius: 2rem; padding: 2px; 
+    background: linear-gradient(90deg, #FACC15 0%, rgba(250, 204, 21, 0) 30%, rgba(250, 204, 21, 0) 70%, #FACC15 100%); 
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); 
+    -webkit-mask-composite: xor; mask-composite: exclude; pointer-events: none; 
+    animation: borderBreathe 4s ease-in-out infinite; z-index: 1 !important; 
+}
 @keyframes borderBreathe { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
-body:not(.menu-open) .scrolled .nav-island { background-color: rgba(5, 5, 5, 0.95); max-width: 48rem; padding-top: 0.5rem; padding-bottom: 0.5rem; }
 
-/* ========================================= */
-/* 3. ANIMASI NAVBAR MENYUSUT (SHRINK EFFECT) */
-/* ========================================= */
-.nav-desktop-container { transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); max-width: 600px; opacity: 1; overflow: hidden; white-space: nowrap; position: relative; z-index: 50 !important; }
-body.scrolled-mode .nav-desktop-container { max-width: 0 !important; width: 0 !important; padding-left: 0 !important; padding-right: 0 !important; margin: 0 !important; opacity: 0; border: none !important; pointer-events: none; transform: scale(0.9); }
-body.scrolled-mode #nav-marker { opacity: 0 !important; display: none !important; }
-body.scrolled-mode .nav-island { max-width: 24rem !important; background-color: rgba(5, 5, 5, 0.95) !important; box-shadow: 0 15px 40px -5px rgba(0, 0, 0, 0.8) !important; padding-top: 0.5rem; padding-bottom: 0.5rem; border-radius: 9999px; }
-body.scrolled-mode .nav-desktop-container { border: none; }
+.nav-link.text-brand-yellow { color: #FACC15 !important; }
 
-/* ========================================= */
-/* 4. FIX: NAVIGASI & KLIK (Z-Index) - DIPERBAIKI */
-/* ========================================= */
-.nav-island * {
-    pointer-events: auto !important;
+/* Mode Navbar Menyusut */
+body.scrolled-mode .nav-island { 
+    background-color: rgba(5, 5, 5, 0.95); 
+    box-shadow: 0 15px 40px -5px rgba(0, 0, 0, 0.8);
 }
 
-.nav-island::before,
-.nav-island::after {
-    pointer-events: none !important;
-    z-index: 1;
-}
-
-.nav-link, .nav-island a, .nav-island button {
-    position: relative;
-    z-index: 100;
-    cursor: pointer;
-}
-
-#home a, #home button { position: relative; z-index: 50 !important; }
-#nav-marker { z-index: 40 !important; }
-#mobile-menu { position: relative; z-index: 9998 !important; }
-
 /* ========================================= */
-/* 5. ANIMATIONS & EFFECTS (GSAP & CSS) */
+/* 4. ANIMASI & UTILS */
 /* ========================================= */
 @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
 .animate-float { animation: float 6s ease-in-out infinite; }
-@keyframes bounceSlow { 0%, 100% { transform: translateY(25%) translateX(25%); } 50% { transform: translateY(15%) translateX(25%); } }
-.animate-bounce-slow { animation: bounceSlow 3s ease-in-out infinite; }
 
-/* Spotlight Card Effect */
-.spotlight-card { position: relative; overflow: hidden; background-color: rgba(20, 20, 20, 0.6); z-index: 1; transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease; }
-.spotlight-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; border-radius: inherit; padding: 1px; background: radial-gradient(800px circle at var(--mouse-x) var(--mouse-y), rgba(250, 204, 21, 0.6), transparent 40%); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; pointer-events: none; z-index: 10; opacity: 0; transition: opacity 0.5s; }
-.spotlight-card:hover::before { opacity: 1; }
-
-/* ========================================= */
-/* 6. ANIMASI BENTUK BLOB (PROFILE IMAGE) */
-/* ========================================= */
-@keyframes morphShape { 0% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; } 50% { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; } 100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; } }
-@keyframes glowingBorder { 0% { box-shadow: 0 0 15px 5px rgba(250, 204, 21, 0.7), inset 0 0 10px rgba(250, 204, 21, 0.3); border-color: rgba(250, 204, 21, 0.8); } 50% { box-shadow: 0 0 25px 10px rgba(250, 204, 21, 0.4), inset 0 0 15px rgba(250, 204, 21, 0.2); border-color: rgba(250, 204, 21, 0.5); } 100% { box-shadow: 0 0 15px 5px rgba(250, 204, 21, 0.7), inset 0 0 10px rgba(250, 204, 21, 0.3); border-color: rgba(250, 204, 21, 0.8); } }
-.morphing-image { animation: morphShape 10s ease-in-out infinite alternate, glowingBorder 4s ease-in-out infinite alternate; overflow: hidden; border: 3px solid transparent; transition: all 0.5s ease-in-out; }
-.morphing-image:hover { box-shadow: 0 0 30px 15px rgba(250, 204, 21, 0.9), inset 0 0 20px rgba(250, 204, 21, 0.5) !important; border-color: #FACC15 !important; animation-play-state: running, paused; }
-
-/* ========================================= */
-/* 7. SECTION: EDUCATION & ORGANIZATION */
-/* ========================================= */
-#organization .relative.border-l-2 { border-left-color: rgba(255, 255, 255, 0.08); margin-left: 1rem; padding-bottom: 2rem; }
-#organization .absolute.-left-\[9px\] { background-color: #0a0a0a; border-width: 2px; z-index: 10; box-shadow: 0 0 0 4px #0a0a0a; }
-#organization .spotlight-card:hover { transform: translateX(5px); border-color: rgba(250, 204, 21, 0.4); box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5); }
-#organization .group:hover .spotlight-card { transform: translateX(5px); }
-#organization h3 { line-height: 1.4; margin-bottom: 0.25rem; }
-#organization p.text-brand-yellow { font-weight: 600; letter-spacing: 0.02em; }
-#organization span.text-xs { display: inline-block; background: rgba(255, 255, 255, 0.05); padding: 0.25rem 0.5rem; border-radius: 4px; margin-top: 0.5rem; margin-bottom: 0.75rem; }
-#organization p.leading-relaxed { line-height: 1.6; }
-
-/* ========================================= */
-/* 8. PRELOADER STYLES */
-/* ========================================= */
-#preloader {
-    pointer-events: all;
+.spotlight-card { 
+    position: relative; overflow: hidden; background-color: rgba(20, 20, 20, 0.6); 
+    transition: transform 0.3s ease, border-color 0.3s ease; 
+}
+/* Disable spotlight/hover effect on mobile to prevent sticky hover states */
+@media (hover: hover) {
+    .spotlight-card:hover { border-color: rgba(250, 204, 21, 0.5); }
+    .spotlight-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; border-radius: inherit; padding: 1px; background: radial-gradient(800px circle at var(--mouse-x) var(--mouse-y), rgba(250, 204, 21, 0.6), transparent 40%); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; pointer-events: none; z-index: 10; opacity: 0; transition: opacity 0.5s; }
+    .spotlight-card:hover::before { opacity: 1; }
 }
 
-/* Container utama page content awalnya turun sedikit agar bisa fade-in up */
-#page-content {
-    transform: translateY(20px);
+@keyframes morphShape { 
+    0% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; } 
+    50% { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; } 
+    100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; } 
+}
+.morphing-image { 
+    animation: morphShape 10s ease-in-out infinite alternate; 
+    border: 3px solid transparent; 
 }
 
-/* Navbar Island Specifics for Animation */
-#nav-island {
-    transform-origin: center top; 
+/* ========================================================= */
+/* 5. MOBILE & RESPONSIVE TWEAKS (MAX-WIDTH 992px & 480px) */
+/* ========================================================= */
+
+@media (max-width: 992px) {
+    /* Navbar Adjustment */
+    .nav-island { 
+        width: 92% !important; 
+        max-width: 95% !important; 
+        padding: 0.75rem 1.25rem !important; 
+        border-radius: 1.5rem !important;
+    }
+    
+    /* Content Padding - Biar tidak ketabrak navbar */
+    .scrollable-content { 
+        padding-top: 6.5rem; 
+        padding-inline: 1.25rem; 
+    }
+
+    /* Grid Gap Reduction */
+    .grid { gap: 1.5rem !important; }
+    
+    /* Font Size Adjustments for Tablet */
+    h1 { font-size: 2.5rem !important; } /* Hero Title */
+    h2 { font-size: 1.75rem !important; } /* Section Title */
 }
 
-/* ========================================= */
-/* 9. MOBILE RESPONSIVE STYLES (900px - 480px) */
-/* ========================================= */
-
-@media (max-width: 900px) {
-  /* ===== GLOBAL MOBILE ADJUSTMENTS ===== */
-  body {
-    font-size: 14px;
-  }
-
-  /* ===== NAVBAR MOBILE OPTIMIZATION ===== */
-  .nav-island {
-    max-width: 95% !important;
-    padding: 0.75rem 1rem !important;
-  }
-
-  #nav-content {
-    padding: 0.25rem 0;
-  }
-
-  .nav-island::before {
-    border-radius: 1.5rem !important;
-  }
-
-  /* Logo size reduction */
-  .nav-island a img {
-    width: 24px !important;
-    height: 24px !important;
-  }
-
-  .nav-island a span {
-    font-size: 16px !important;
-  }
-
-  /* ===== HERO SECTION MOBILE ===== */
-  #home {
-    padding-top: 6rem !important;
-    padding-bottom: 3rem !important;
-    min-height: auto !important;
-  }
-
-  #home .grid {
-    gap: 2rem !important;
-  }
-
-  #home h1 {
-    font-size: 2.5rem !important;
-    line-height: 1.2 !important;
-  }
-
-  #home h2 {
-    font-size: 1.5rem !important;
-  }
-
-  #home p {
-    font-size: 1rem !important;
-  }
-
-  /* Profile image mobile optimization */
-  #home .animate-float {
-    width: 280px !important;
-    height: 280px !important;
-  }
-
-  #home .morphing-image {
-    border-width: 2px !important;
-  }
-
-  /* Social links container mobile */
-  #home .absolute.bottom-0.right-0 {
-    transform: scale(0.9) !important;
-    right: -10px !important;
-    bottom: -10px !important;
-  }
-
-  /* Button group mobile */
-  #home .flex-wrap {
-    justify-content: center !important;
-    gap: 0.75rem !important;
-  }
-
-  #home .flex-wrap a {
-    padding: 0.75rem 1.5rem !important;
-    font-size: 0.9rem !important;
-  }
-
-  /* ===== ABOUT SECTION MOBILE ===== */
-  #about {
-    padding-top: 3rem !important;
-    padding-bottom: 3rem !important;
-  }
-
-  #about .grid {
-    gap: 2rem !important;
-  }
-
-  #about h2 {
-    font-size: 2rem !important;
-    margin-bottom: 2rem !important;
-  }
-
-  /* About image mobile */
-  #about .lg\\:col-span-1 .rounded-2xl {
-    max-width: 250px !important;
-    margin: 0 auto !important;
-  }
-
-  /* Info cards mobile */
-  #about .bg-dark-900.border {
-    padding: 1rem !important;
-  }
-
-  #about .bg-dark-900.border .w-10 {
-    width: 2rem !important;
-    height: 2rem !important;
-  }
-
-  /* Social icons grid mobile */
-  #about .grid-cols-3 {
-    gap: 0.5rem !important;
-  }
-
-  #about .grid-cols-3 a {
-    padding: 0.75rem !important;
-  }
-
-  /* Achievement section mobile */
-  #about .bg-dark-900.border.p-6 {
-    padding: 1.5rem !important;
-  }
-
-  #about .bg-dark-900.border.p-6 .w-12 {
-    width: 2.5rem !important;
-    height: 2.5rem !important;
-  }
-
-  /* ===== EXPERIENCE SECTION MOBILE ===== */
-  #experience {
-    padding-top: 3rem !important;
-    padding-bottom: 3rem !important;
-  }
-
-  #experience h2 {
-    font-size: 2rem !important;
-    margin-bottom: 2rem !important;
-  }
-
-  #experience .grid {
-    gap: 1.5rem !important;
-    grid-template-columns: 1fr !important;
-  }
-
-  #experience .bg-dark-800 {
-    padding: 1.5rem !important;
-  }
-
-  #experience .p-3 {
-    padding: 0.75rem !important;
-  }
-
-  #experience .text-xl {
-    font-size: 1.25rem !important;
-  }
-
-  /* ===== PROJECTS SECTION MOBILE ===== */
-  #projects {
-    padding-top: 3rem !important;
-    padding-bottom: 3rem !important;
-  }
-
-  #projects h2 {
-    font-size: 2rem !important;
-    margin-bottom: 2rem !important;
-  }
-
-  #projects .grid {
-    gap: 1.5rem !important;
-    grid-template-columns: 1fr !important;
-  }
-
-  #projects .h-48 {
-    height: 200px !important;
-  }
-
-  #projects .p-6 {
-    padding: 1.5rem !important;
-  }
-
-  #projects .text-xl {
-    font-size: 1.25rem !important;
-  }
-
-  /* ===== SKILLS SECTION MOBILE ===== */
-  #skills {
-    padding-top: 3rem !important;
-    padding-bottom: 3rem !important;
-  }
-
-  #skills h2 {
-    font-size: 2rem !important;
-  }
-
-  #skills .grid {
-    gap: 2rem !important;
-    grid-template-columns: 1fr !important;
-  }
-
-  #skills .bg-dark-800 {
-    padding: 1.5rem !important;
-  }
-
-  /* Skills tags mobile */
-  #skills .flex-wrap {
-    gap: 0.5rem !important;
-  }
-
-  #skills .flex-wrap span {
-    padding: 0.5rem 0.75rem !important;
-    font-size: 0.8rem !important;
-  }
-
-  /* Certification card mobile */
-  #skills .bg-gradient-to-br {
-    padding: 2rem !important;
-  }
-
-  #skills .bg-gradient-to-br .w-16 {
-    width: 3rem !important;
-    height: 3rem !important;
-  }
-
-  /* ===== EDUCATION & ORGANIZATION MOBILE ===== */
-  #organization {
-    padding-top: 3rem !important;
-    padding-bottom: 3rem !important;
-  }
-
-  #organization h2 {
-    font-size: 2rem !important;
-    margin-bottom: 2rem !important;
-  }
-
-  #organization .grid {
-    gap: 2rem !important;
-    grid-template-columns: 1fr !important;
-  }
-
-  #organization .space-y-8 {
-    gap: 2rem !important;
-  }
-
-  #organization .bg-dark-800 {
-    padding: 1.5rem !important;
-  }
-
-  #organization .text-lg {
-    font-size: 1.1rem !important;
-  }
-
-  /* Timeline dots mobile */
-  #organization .absolute.-left-\\[9px\\] {
-    left: -8px !important;
-    width: 12px !important;
-    height: 12px !important;
-  }
-
-  /* ===== CONTACT SECTION MOBILE ===== */
-  #contact {
-    padding-top: 3rem !important;
-    padding-bottom: 3rem !important;
-  }
-
-  #contact h2 {
-    font-size: 2rem !important;
-  }
-
-  #contact p {
-    font-size: 1rem !important;
-  }
-
-  #contact a {
-    padding: 1rem 2rem !important;
-    font-size: 1rem !important;
-  }
-
-  /* ===== FOOTER MOBILE ===== */
-  footer {
-    padding-top: 3rem !important;
-    padding-bottom: 2rem !important;
-  }
-
-  footer .grid {
-    grid-template-columns: 1fr !important;
-    gap: 2rem !important;
-  }
-
-  footer .bg-dark-900 {
-    padding: 1.5rem !important;
-  }
-
-  /* Social links footer mobile */
-  footer .flex.gap-4 {
-    justify-content: center !important;
-  }
-
-  /* ===== MOBILE MENU ENHANCEMENTS ===== */
-  #mobile-menu {
-    padding: 1rem 0 !important;
-  }
-
-  .mobile-link {
-    font-size: 1.1rem !important;
-    padding: 0.75rem !important;
-  }
-
-  /* Language toggle mobile */
-  #mobile-lang-btn {
-    font-size: 0.9rem !important;
-  }
-
-  /* ===== UTILITY CLASSES FOR MOBILE ===== */
-  .text-3xl {
-    font-size: 1.75rem !important;
-  }
-
-  .text-4xl {
-    font-size: 2rem !important;
-  }
-
-  .text-5xl {
-    font-size: 2.5rem !important;
-  }
-
-  .text-7xl {
-    font-size: 3rem !important;
-  }
-
-  .p-8 {
-    padding: 1.5rem !important;
-  }
-
-  .p-6 {
-    padding: 1.25rem !important;
-  }
-
-  .gap-12 {
-    gap: 2rem !important;
-  }
-
-  .gap-8 {
-    gap: 1.5rem !important;
-  }
-
-  .gap-6 {
-    gap: 1rem !important;
-  }
-}
-
-/* ========================================= */
-/* 10. SMALL MOBILE OPTIMIZATION (480px and below) */
-/* ========================================= */
 @media (max-width: 480px) {
-  /* ===== EXTRA SMALL SCREENS ===== */
-  body {
-    font-size: 13px;
-  }
+    /* Navbar lebih ramping di HP */
+    .nav-island { 
+        padding: 0.6rem 1rem !important; 
+    }
+    
+    /* Logo size */
+    .nav-island img { width: 1.75rem; height: 1.75rem; }
+    .nav-island span { font-size: 1rem; }
 
-  /* ===== NAVBAR ULTRA COMPACT ===== */
-  .nav-island {
-    padding: 0.5rem 0.75rem !important;
-    border-radius: 1.25rem !important;
-  }
+    /* Content */
+    .scrollable-content { 
+        padding-top: 6rem; /* Lebih turun dikit */
+        padding-bottom: 4rem; /* Ruang untuk scroll bawah */
+        padding-inline: 1rem;
+    }
 
-  .nav-island::before {
-    border-radius: 1.25rem !important;
-  }
+    /* Typography Scale Down - Agar tidak penuh sesak */
+    h1 { font-size: 2rem !important; line-height: 1.2 !important; }
+    h2 { font-size: 1.5rem !important; margin-bottom: 1.5rem !important; }
+    p { font-size: 0.875rem !important; } /* Text sm */
 
-  /* ===== HERO SECTION ULTRA COMPACT ===== */
-  #home {
-    padding-top: 5rem !important;
-    padding-bottom: 2rem !important;
-  }
+    /* Card Adjustments */
+    .spotlight-card, .bg-dark-800, .bg-dark-900 {
+        padding: 1.25rem !important; /* Padding kartu lebih kecil */
+        border-radius: 0.75rem !important;
+    }
 
-  #home h1 {
-    font-size: 2rem !important;
-  }
-
-  #home h2 {
-    font-size: 1.25rem !important;
-  }
-
-  #home .animate-float {
-    width: 220px !important;
-    height: 220px !important;
-  }
-
-  /* Button stack on very small screens */
-  #home .flex-wrap {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  #home .flex-wrap a {
-    width: 100%;
-    max-width: 250px;
-    text-align: center;
-  }
-
-  /* ===== ABOUT SECTION ULTRA COMPACT ===== */
-  #about .lg\\:col-span-1 .rounded-2xl {
-    max-width: 200px !important;
-  }
-
-  /* Social icons single row */
-  #about .grid-cols-3 {
-    grid-template-columns: repeat(3, 1fr);
-  }
-
-  #about .grid-cols-3 a {
-    padding: 0.5rem !important;
-  }
-
-  /* ===== CARDS ULTRA COMPACT ===== */
-  .bg-dark-800,
-  .bg-dark-900 {
-    padding: 1rem !important;
-  }
-
-  /* ===== SKILLS TAGS ULTRA COMPACT ===== */
-  #skills .flex-wrap span {
-    padding: 0.4rem 0.6rem !important;
-    font-size: 0.75rem !important;
-  }
-
-  /* ===== FOOTER ULTRA COMPACT ===== */
-  footer {
-    padding: 2rem 0 !important;
-  }
-
-  footer .bg-dark-900 {
-    padding: 1rem !important;
-  }
-
-  /* ===== TEXT SIZE ADJUSTMENTS ===== */
-  .text-lg {
-    font-size: 1rem !important;
-  }
-
-  .text-xl {
-    font-size: 1.1rem !important;
-  }
-
-  .text-2xl {
-    font-size: 1.4rem !important;
-  }
-
-  /* ===== PADDING/MARGIN REDUCTIONS ===== */
-  .p-4 {
-    padding: 0.75rem !important;
-  }
-
-  .p-5 {
-    padding: 1rem !important;
-  }
-
-  .m-4 {
-    margin: 0.75rem !important;
-  }
-
-  .gap-4 {
-    gap: 0.75rem !important;
-  }
-
-  /* ===== MOBILE MENU ULTRA COMPACT ===== */
-  .mobile-link {
-    font-size: 1rem !important;
-    padding: 0.5rem !important;
-  }
-
-  #mobile-menu .flex.items-center.gap-6 {
-    flex-direction: column;
-    gap: 1rem !important;
-  }
-}
-
-/* ========================================= */
-/* 11. TABLET OPTIMIZATION (901px - 1024px) */
-/* ========================================= */
-@media (min-width: 901px) and (max-width: 1024px) {
-  /* Intermediate adjustments for tablets */
-  .nav-island {
-    max-width: 90% !important;
-  }
-
-  #home h1 {
-    font-size: 3.5rem !important;
-  }
-
-  #projects .grid {
-    grid-template-columns: repeat(2, 1fr) !important;
-  }
-
-  #organization .grid {
-    grid-template-columns: 1fr !important;
-  }
-}
-
-/* ========================================= */
-/* 12. TOUCH DEVICE OPTIMIZATIONS */
-/* ========================================= */
-@media (hover: none) and (pointer: coarse) {
-  /* Improve touch interactions */
-  .nav-link,
-  .mobile-link,
-  button,
-  a {
-    min-height: 44px;
-    min-width: 44px;
-  }
-
-  /* Reduce hover effects on touch devices */
-  .spotlight-card::before {
-    display: none;
-  }
-
-  .morphing-image:hover {
-    animation-play-state: running !important;
-  }
-
-  /* Larger tap targets for mobile */
-  #home .flex-wrap a {
-    padding: 1rem 1.5rem !important;
-  }
-
-  /* Social media icons larger for touch */
-  #home .absolute.bottom-0.right-0 a {
-    padding: 0.75rem !important;
-  }
-}
-
-/* ========================================= */
-/* 13. LANDSCAPE MOBILE OPTIMIZATION */
-/* ========================================= */
-@media (max-height: 600px) and (orientation: landscape) {
-  #home {
-    min-height: auto !important;
-    padding: 4rem 0 !important;
-  }
-
-  .nav-island {
-    position: fixed !important;
-    top: 0.5rem !important;
-  }
-
-  #home .grid {
-    grid-template-columns: 1fr !important;
-    gap: 1rem !important;
-  }
-
-  #home .animate-float {
-    width: 150px !important;
-    height: 150px !important;
-  }
+    /* Sembunyikan elemen dekorasi berat di mobile jika perlu */
+    .animate-float { animation: none !important; } /* Matikan animasi berat */
+    
+    /* Form Input Size */
+    input, textarea { 
+        font-size: 16px !important; /* Mencegah zoom otomatis iOS */ 
+        padding: 0.75rem !important;
+    }
 }

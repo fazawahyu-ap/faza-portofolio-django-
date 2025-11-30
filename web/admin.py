@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Translation, SiteSetting, Project, WorkExperience, Organization, Education, Skill
+from .models import Translation, SiteSetting, Project, WorkExperience, Organization, Education, Skill, Feedback
 
 # 1. Translation Admin
 @admin.register(Translation)
@@ -51,3 +51,10 @@ class SkillAdmin(admin.ModelAdmin):
     list_display = ('name_en', 'category', 'icon')
     list_filter = ('category',)
     search_fields = ('name_id', 'name_en')
+
+# 8. Form
+@admin.register(Feedback)
+class FeedbackAdmin(admin.ModelAdmin):
+    list_display = ('name', 'email', 'created_at')
+    search_fields = ('name', 'email', 'message')
+    readonly_fields = ('created_at',)
