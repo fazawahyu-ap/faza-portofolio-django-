@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     
-    // --- 0. REGISTER PLUGIN ---
-    gsap.registerPlugin(Observer);
+    // --- 0. REGISTER PLUGINS ---
+    gsap.registerPlugin(Observer, ScrollTrigger, ScrollToPlugin); // Pastikan semua plugin terdaftar
     if (typeof feather !== 'undefined') feather.replace();
 
     // ===========================================
@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const tl = gsap.timeline({
         onComplete: () => {
-            initFullPageScroll();
+            initResponsiveScroll(); // <--- UPDATE: Panggil fungsi responsif
         }
     });
 
@@ -37,109 +37,150 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
     // ===========================================
-    // 2. FULL PAGE SCROLL LOGIC
+    // 2. RESPONSIVE SCROLL LOGIC (DESKTOP vs MOBILE)
     // ===========================================
-    function initFullPageScroll() {
+    let observerInstance = null; 
+    let scrollTriggers = [];     
+
+    function initResponsiveScroll() {
         const sections = document.querySelectorAll(".fp-section");
         const navLinks = document.querySelectorAll(".nav-link, .mobile-link, .nav-link-home");
-        
-        let currentIndex = 0;
-        let isAnimating = false;
         const totalSections = sections.length;
+        
+        // Deteksi Desktop (> 1023px)
+        const isDesktop = window.matchMedia("(min-width: 1024px)").matches;
 
-        gsap.set(sections, { autoAlpha: 0, zIndex: 0 });
-        gsap.set(sections[0], { autoAlpha: 1, zIndex: 1 });
-        updateNavbarState(0);
+        // --- CLEANUP (Hapus state lama saat resize) ---
+        if (observerInstance) { observerInstance.kill(); observerInstance = null; }
+        scrollTriggers.forEach(st => st.kill());
+        scrollTriggers = [];
+        gsap.set(sections, { clearProps: "all" }); // Reset gaya GSAP
 
-        function gotoSection(index) {
-            if (index === currentIndex || index < 0 || index >= totalSections || isAnimating) return;
-            
-            isAnimating = true;
-            const currentSection = sections[currentIndex];
-            const nextSection = sections[index];
+        // --- MODE 1: DESKTOP (SLIDE EFFECT) ---
+        if (isDesktop) {
+            let currentIndex = 0;
+            let isAnimating = false;
 
-            gsap.set(nextSection, { zIndex: 10 });
-            gsap.set(currentSection, { zIndex: 1 });
+            gsap.set(sections, { autoAlpha: 0, zIndex: 0 });
+            gsap.set(sections[0], { autoAlpha: 1, zIndex: 1 });
+            updateNavbarState(0);
 
-            const tlTransition = gsap.timeline({
-                onComplete: () => {
-                    isAnimating = false;
-                    currentIndex = index;
-                    updateNavbarState(index);
-                    gsap.set(currentSection, { autoAlpha: 0, zIndex: 0 });
-                }
-            });
-
-            tlTransition.to(currentSection, {
-                autoAlpha: 0,
-                scale: 0.95,
-                filter: "blur(10px)",
-                duration: 0.8,
-                ease: "power3.inOut"
-            }, 0);
-
-            tlTransition.fromTo(nextSection, {
-                autoAlpha: 0,
-                scale: 1.05,
-                filter: "blur(10px)"
-            }, {
-                autoAlpha: 1,
-                scale: 1,
-                filter: "blur(0px)",
-                duration: 0.8,
-                ease: "power3.inOut"
-            }, 0);
-        }
-
-        Observer.create({
-            type: "wheel,touch,pointer",
-            wheelSpeed: -1,
-            onDown: () => !isAnimating && gotoSection(currentIndex - 1),
-            onUp: () => !isAnimating && gotoSection(currentIndex + 1),
-            tolerance: 50, 
-            preventDefault: true,
-            ignore: ".scrollable-content"
-        });
-
-        const sectionIds = Array.from(sections).map(sec => sec.id);
-
-        navLinks.forEach(link => {
-            link.addEventListener("click", (e) => {
-                const href = link.getAttribute("href");
-                if(!href || href === "#") return;
+            function gotoSection(index) {
+                if (index === currentIndex || index < 0 || index >= totalSections || isAnimating) return;
                 
-                const targetId = href.substring(1);
-                const targetIndex = sectionIds.indexOf(targetId);
+                isAnimating = true;
+                const currentSection = sections[currentIndex];
+                const nextSection = sections[index];
 
-                if (targetIndex !== -1) {
-                    e.preventDefault();
-                    gotoSection(targetIndex);
+                gsap.set(nextSection, { zIndex: 10 });
+                gsap.set(currentSection, { zIndex: 1 });
 
-                    if(document.body.classList.contains('menu-open')) {
-                        toggleMenu(); 
+                const tlTransition = gsap.timeline({
+                    onComplete: () => {
+                        isAnimating = false;
+                        currentIndex = index;
+                        updateNavbarState(index);
+                        gsap.set(currentSection, { autoAlpha: 0, zIndex: 0 });
                     }
-                }
-            });
-        });
+                });
 
-        function updateNavbarState(index) {
-            document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('text-brand-yellow'));
-            
-            const activeId = sections[index].id;
-            const activeLinks = document.querySelectorAll(`a[href="#${activeId}"]`);
-            activeLinks.forEach(link => {
-                if(link.classList.contains('nav-link')) {
-                    link.classList.add('text-brand-yellow');
-                }
-            });
-
-            if (index > 0) {
-                document.body.classList.add('scrolled-mode');
-            } else {
-                document.body.classList.remove('scrolled-mode');
+                tlTransition.to(currentSection, { autoAlpha: 0, scale: 0.95, filter: "blur(10px)", duration: 0.8, ease: "power3.inOut" }, 0);
+                tlTransition.fromTo(nextSection, { autoAlpha: 0, scale: 1.05, filter: "blur(10px)" }, { autoAlpha: 1, scale: 1, filter: "blur(0px)", duration: 0.8, ease: "power3.inOut" }, 0);
             }
+
+            observerInstance = Observer.create({
+                type: "wheel,touch,pointer",
+                wheelSpeed: -1,
+                onDown: () => !isAnimating && gotoSection(currentIndex - 1),
+                onUp: () => !isAnimating && gotoSection(currentIndex + 1),
+                tolerance: 50, preventDefault: true, ignore: ".scrollable-content"
+            });
+
+            // Handle Nav Click Desktop
+            const sectionIds = Array.from(sections).map(sec => sec.id);
+            navLinks.forEach(link => {
+                // Cloning untuk hapus event listener lama
+                const newLink = link.cloneNode(true); 
+                link.parentNode.replaceChild(newLink, link);
+                
+                newLink.addEventListener("click", (e) => {
+                    const href = newLink.getAttribute("href");
+                    if(!href || href === "#") return;
+                    e.preventDefault();
+                    const targetId = href.substring(1);
+                    const targetIndex = sectionIds.indexOf(targetId);
+                    if (targetIndex !== -1) gotoSection(targetIndex);
+                });
+            });
+
+            function updateNavbarState(index) {
+                document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('text-brand-yellow'));
+                const activeId = sections[index].id;
+                const activeBtn = document.querySelector(`.nav-link[href="#${activeId}"]`);
+                if(activeBtn) activeBtn.classList.add('text-brand-yellow');
+                
+                if (index > 0) document.body.classList.add('scrolled-mode');
+                else document.body.classList.remove('scrolled-mode');
+            }
+
+        } 
+        
+        // --- MODE 2: MOBILE (NATIVE SCROLL + SCROLL TRIGGER) ---
+        else {
+            // Aktifkan scroll native
+            document.body.style.overflow = "auto";
+            document.body.style.height = "auto";
+
+            // Update Navbar saat user scroll manual
+            sections.forEach((section) => {
+                const st = ScrollTrigger.create({
+                    trigger: section,
+                    start: "top center",
+                    end: "bottom center",
+                    onEnter: () => updateMobileNav(section.id),
+                    onEnterBack: () => updateMobileNav(section.id)
+                });
+                scrollTriggers.push(st);
+            });
+
+            function updateMobileNav(activeId) {
+                document.querySelectorAll('.mobile-link, .nav-link').forEach(el => el.classList.remove('text-brand-yellow'));
+                const activeBtn = document.querySelector(`a[href="#${activeId}"]`);
+                if(activeBtn) {
+                    activeBtn.classList.add('text-brand-yellow');
+                    // Sync ke desktop btn juga jika terlihat
+                    const deskBtn = document.querySelector(`.nav-link[href="#${activeId}"]`);
+                    if(deskBtn) deskBtn.classList.add('text-brand-yellow');
+                }
+            }
+
+            // Smooth Scroll Click Mobile
+            navLinks.forEach(link => {
+                const newLink = link.cloneNode(true);
+                link.parentNode.replaceChild(newLink, link);
+
+                newLink.addEventListener("click", (e) => {
+                    const href = newLink.getAttribute("href");
+                    if(!href || href === "#") return;
+                    e.preventDefault();
+                    
+                    if(document.body.classList.contains('menu-open')) toggleMenu();
+
+                    const targetElem = document.querySelector(href);
+                    if(targetElem) {
+                        gsap.to(window, { duration: 1, scrollTo: { y: targetElem, offsetY: 80 }, ease: "power2.inOut" });
+                    }
+                });
+            });
         }
     }
+
+    // Handle Resize (Switch Mode Otomatis)
+    let resizeTimer;
+    window.addEventListener("resize", () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(initResponsiveScroll, 250);
+    });
 
     // ===========================================
     // 3. MOBILE MENU LOGIC
@@ -197,7 +238,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // ===========================================
     // 5. TRANSLATION LOGIC (COMPLETE)
     // ===========================================
-    
     if (typeof translations === 'undefined' || !translations) {
         console.error("Translation data MISSING from Django View!");
     }
@@ -206,21 +246,15 @@ document.addEventListener('DOMContentLoaded', function() {
     
     window.switchLanguage = function(lang) {
         if (typeof translations === 'undefined') return;
-        
         localStorage.setItem('selected_lang', lang);
         currentLang = lang;
-
-        // 1. Tombol
         const btnText = lang.toUpperCase(); 
         const deskBtnText = document.getElementById('lang-btn-text');
         const mobBtnText = document.getElementById('mobile-lang-text');
         if(deskBtnText) deskBtnText.textContent = btnText;
         if(mobBtnText) mobBtnText.textContent = btnText;
-
-        // 2. Class Toggle (.lang-id / .lang-en)
         const idElements = document.querySelectorAll('.lang-id');
         const enElements = document.querySelectorAll('.lang-en');
-
         if (lang === 'id') {
             enElements.forEach(el => el.classList.add('hidden'));
             idElements.forEach(el => el.classList.remove('hidden'));
@@ -228,8 +262,6 @@ document.addEventListener('DOMContentLoaded', function() {
             idElements.forEach(el => el.classList.add('hidden'));
             enElements.forEach(el => el.classList.remove('hidden'));
         }
-
-        // 3. Static Keys
         const data = translations[lang];
         if (data) {
             const elements = document.querySelectorAll('[data-translate-key]');
@@ -247,7 +279,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
         }
-        
         setTimeout(() => { if (typeof feather !== 'undefined') feather.replace(); }, 200);
     };
 
@@ -258,7 +289,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const btn = e.currentTarget;
         const icon = btn.querySelector('svg');
         if(icon) gsap.fromTo(icon, {rotation: 0}, {rotation: 360, duration: 0.5, ease: "back.out(1.7)"});
-
         const newLang = currentLang === 'id' ? 'en' : 'id';
         switchLanguage(newLang);
     };
@@ -269,21 +299,16 @@ document.addEventListener('DOMContentLoaded', function() {
     if(deskLangBtn) deskLangBtn.addEventListener('click', toggleLang);
     if(mobLangBtn) mobLangBtn.addEventListener('click', toggleLang);
 
-
     // ===========================================
     // 6. FEEDBACK FORM (AJAX)
     // ===========================================
     const feedbackForm = document.getElementById('feedbackForm');
-    
     if (feedbackForm) {
         feedbackForm.addEventListener('submit', async function(e) {
             e.preventDefault();
-            
             const btn = document.getElementById('fb_submit_btn');
             const btnText = document.getElementById('fb_btn_text');
             const statusMsg = document.getElementById('fb_status');
-            const originalText = btnText.innerText;
-
             btn.disabled = true;
             btnText.innerText = "Sending..."; 
             btn.classList.add('opacity-70', 'cursor-not-allowed');
@@ -293,34 +318,24 @@ document.addEventListener('DOMContentLoaded', function() {
                 email: document.getElementById('fb_email').value,
                 message: document.getElementById('fb_message').value
             };
-
             const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-
-            // Helper ambil teks pesan sesuai bahasa
             const getTrans = (key, fallback) => {
                 if (translations && translations[currentLang] && translations[currentLang][key]) {
                     return translations[currentLang][key];
                 }
                 return fallback;
             };
-
             const msgSuccess = getTrans('feedback_success', 'Terima kasih! Pesan terkirim.');
             const msgError = getTrans('feedback_error', 'Gagal mengirim pesan.');
 
             try {
                 const response = await fetch('/api/submit-feedback/', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': csrfToken
-                    },
+                    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken },
                     body: JSON.stringify(formData)
                 });
-
                 const result = await response.json();
-
                 statusMsg.classList.remove('hidden', 'text-green-500', 'text-red-500');
-                
                 if (response.ok && result.status === 'success') {
                     statusMsg.innerText = msgSuccess;
                     statusMsg.classList.add('text-green-500');
@@ -328,7 +343,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 } else {
                     throw new Error(result.message || msgError);
                 }
-
             } catch (error) {
                 statusMsg.innerText = msgError + " (" + error.message + ")";
                 statusMsg.classList.add('text-red-500');
@@ -339,7 +353,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 } else {
                      btnText.innerText = "Kirim Pesan"; 
                 }
-                
                 btn.classList.remove('opacity-70', 'cursor-not-allowed');
                 setTimeout(() => { statusMsg.classList.add('hidden'); }, 5000);
             }
@@ -347,53 +360,85 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // ===========================================
-    // 7. MODAL POPUP (PRIVACY & TERMS)
+    // 7. MODAL POPUP & AI CHAT
     // ===========================================
-    
     function setupModal(triggerId, modalId) {
         const trigger = document.getElementById(triggerId);
         const modal = document.getElementById(modalId);
-        
         if (!trigger || !modal) return;
-
         const modalContent = modal.querySelector('div'); 
         const closeBtns = modal.querySelectorAll('.close-modal');
-
         trigger.addEventListener('click', (e) => {
             e.preventDefault();
             modal.classList.remove('hidden');
             modal.classList.add('flex');
-            
             gsap.to(modal, { opacity: 1, duration: 0.3 });
             gsap.to(modalContent, { scale: 1, duration: 0.3, ease: "back.out(1.2)" });
         });
-
         const closeModal = () => {
             gsap.to(modal, { opacity: 0, duration: 0.2 });
             gsap.to(modalContent, { 
-                scale: 0.95, 
-                duration: 0.2, 
-                onComplete: () => {
-                    modal.classList.add('hidden');
-                    modal.classList.remove('flex');
-                } 
+                scale: 0.95, duration: 0.2, 
+                onComplete: () => { modal.classList.add('hidden'); modal.classList.remove('flex'); } 
             });
         };
-
         closeBtns.forEach(btn => btn.addEventListener('click', closeModal));
-
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) closeModal();
-        });
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key === "Escape" && !modal.classList.contains('hidden')) {
-                closeModal();
-            }
-        });
+        modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+        document.addEventListener('keydown', (e) => { if (e.key === "Escape" && !modal.classList.contains('hidden')) closeModal(); });
     }
-
     setupModal('btn-privacy', 'modal-privacy');
     setupModal('btn-terms', 'modal-terms');
 
+    // Chat Logic
+    const aiToggle = document.getElementById('ai-toggle-btn');
+    const aiBox = document.getElementById('ai-chat-box');
+    const aiClose = document.getElementById('close-chat');
+    const aiForm = document.getElementById('ai-chat-form');
+    const aiInput = document.getElementById('ai-input');
+    const chatMsgs = document.getElementById('chat-messages');
+    let isOpen = false;
+
+    function toggleChat() {
+        isOpen = !isOpen;
+        if(isOpen) {
+            aiBox.classList.remove('hidden', 'scale-90', 'opacity-0');
+            aiBox.classList.add('flex', 'scale-100', 'opacity-100');
+            aiToggle.classList.add('hidden');
+            setTimeout(() => aiInput.focus(), 100);
+        } else {
+            aiBox.classList.add('hidden', 'scale-90', 'opacity-0');
+            aiBox.classList.remove('flex', 'scale-100', 'opacity-100');
+            aiToggle.classList.remove('hidden');
+        }
+    }
+
+    if(aiToggle) {
+        aiToggle.addEventListener('click', toggleChat);
+        aiClose.addEventListener('click', toggleChat);
+        aiForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const msg = aiInput.value.trim();
+            if(!msg) return;
+            chatMsgs.innerHTML += `<div class="flex justify-end"><div class="bg-brand-yellow text-black p-2.5 rounded-tl-xl rounded-tr-xl rounded-bl-xl text-xs max-w-[85%]">${msg}</div></div>`;
+            aiInput.value = '';
+            chatMsgs.scrollTop = chatMsgs.scrollHeight;
+            const loadingId = Date.now();
+            chatMsgs.innerHTML += `<div id="${loadingId}" class="flex items-center gap-2 text-xs text-gray-500 animate-pulse ml-8"><span>Mengetik...</span></div>`;
+            try {
+                const res = await fetch('/api/chat-ai/', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json', 'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value},
+                    body: JSON.stringify({message: msg})
+                });
+                const data = await res.json();
+                document.getElementById(loadingId).remove();
+                const reply = data.status === 'success' ? data.reply : "Maaf, ada error.";
+                chatMsgs.innerHTML += `<div class="flex items-start gap-2"><div class="w-6 h-6 rounded-full bg-brand-yellow flex-shrink-0 flex items-center justify-center text-[10px] text-black font-bold">AI</div><div class="bg-white/5 text-gray-200 p-2.5 rounded-tr-xl rounded-br-xl rounded-bl-xl border border-white/5 text-xs">${reply}</div></div>`;
+                chatMsgs.scrollTop = chatMsgs.scrollHeight;
+            } catch (err) {
+                document.getElementById(loadingId).remove();
+                console.error(err);
+            }
+        });
+    }
 });

@@ -1,179 +1,104 @@
 /* ========================================= */
-/* 1. GLOBAL & SETUP */
+/* 1. GLOBAL & SETUP (MOBILE FIRST DEFAULT)  */
 /* ========================================= */
-html, body { 
+html { 
     margin: 0; 
     padding: 0; 
     width: 100%; 
-    height: 100%; 
-    overflow: hidden !important; 
-    background-color: #0a0a0a; 
-    overscroll-behavior: none;
-    -webkit-tap-highlight-color: transparent; /* Hilangkan highlight biru saat tap di mobile */
+    height: 100%; /* Penting agar gradient full */
 }
 
-/* Custom Scrollbar */
-.scrollable-content::-webkit-scrollbar { width: 4px; } /* Lebih tipis di mobile */
+body { 
+    margin: 0; 
+    padding: 0; 
+    width: 100%; 
+    min-height: 100vh;
+    overflow-x: hidden; 
+    /* Hapus background-color solid, biarkan transparan agar gradient di base.html terlihat */
+    background-color: transparent; 
+    color: #e5e7eb; /* Text gray-200 */
+    overscroll-behavior: none; 
+    -webkit-tap-highlight-color: transparent; 
+}
+
+/* Scrollbar Default (Mobile) */
+.scrollable-content::-webkit-scrollbar { width: 4px; }
 .scrollable-content::-webkit-scrollbar-track { background: transparent; }
 .scrollable-content::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+/* ========================================= */
+/* 2. SECTION LOGIC (NATIVE SCROLL)          */
+/* ========================================= */
+/* Di Mobile: Section relative & height auto agar konten panjang tidak terpotong */
+.fp-section { position: relative; width: 100%; min-height: 100vh; height: auto; opacity: 1; visibility: visible; z-index: 1; padding-bottom: 2rem; background-color: transparent; }
+.scrollable-content { width: 100%; height: auto; padding-top: 6rem; padding-bottom: 4rem; padding-inline: 1.5rem; overflow: visible; display: flex; flex-direction: column; }
+.center-content { display: flex; flex-direction: column; justify-content: center; min-height: 80vh; }
 
 /* ========================================= */
-/* 2. FULL PAGE SECTION LOGIC */
+/* 3. DESKTOP ONLY LOGIC (min-width: 1024px) */
 /* ========================================= */
-.fp-section {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    visibility: hidden; 
-    opacity: 0;
-    z-index: 0;
-    background-color: #0a0a0a;
-}
-
-.scrollable-content {
-    width: 100%;
-    height: 100%;
-    overflow-y: auto; 
-    overflow-x: hidden;
-    padding-top: 6rem; 
-    padding-bottom: 2rem;
-    box-sizing: border-box;
-    -webkit-overflow-scrolling: touch; /* Smooth scroll native di iOS */
-}
-
-.center-content {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 100%;
+@media (min-width: 1024px) {
+    body { overflow: hidden !important; height: 100% !important; }
+    .fp-section { position: absolute; top: 0; left: 0; height: 100%; overflow: hidden; opacity: 0; visibility: hidden; padding-bottom: 0; }
+    .scrollable-content { height: 100%; overflow-y: auto; padding-inline: 0; padding-top: 6rem; padding-bottom: 0; display: block; }
+    /* Scrollbar Desktop */
+    .scrollable-content::-webkit-scrollbar { width: 6px; }
+    .scrollable-content::-webkit-scrollbar-thumb:hover { background: #FACC15; }
 }
 
 /* ========================================= */
-/* 3. NAVBAR STYLES */
+/* 4. COMPONENT: NAVBAR                      */
 /* ========================================= */
-.nav-island { 
-    position: relative; 
-    width: 100%; 
-    max-width: 56rem; 
-    height: auto; 
-    background-color: rgba(10, 10, 10, 0.85); 
-    backdrop-filter: blur(20px); 
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.08); 
-    box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.6); 
-    z-index: 50; 
-    transition: all 0.5s ease;
-}
-
-/* Efek Border Bernafas */
-.nav-island::before { 
-    content: ""; position: absolute; inset: 0; border-radius: 2rem; padding: 2px; 
-    background: linear-gradient(90deg, #FACC15 0%, rgba(250, 204, 21, 0) 30%, rgba(250, 204, 21, 0) 70%, #FACC15 100%); 
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); 
-    -webkit-mask-composite: xor; mask-composite: exclude; pointer-events: none; 
-    animation: borderBreathe 4s ease-in-out infinite; z-index: 1 !important; 
-}
+.nav-island { position: relative; width: 100%; max-width: 56rem; height: auto; background-color: rgba(10, 10, 10, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.6); z-index: 50; transition: all 0.5s ease; }
+/* Animated Border */
+.nav-island::before { content: ""; position: absolute; inset: 0; border-radius: 2rem; padding: 2px; background: linear-gradient(90deg, #FACC15 0%, rgba(250, 204, 21, 0) 30%, rgba(250, 204, 21, 0) 70%, #FACC15 100%); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; pointer-events: none; animation: borderBreathe 4s ease-in-out infinite; z-index: 1 !important; }
 @keyframes borderBreathe { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
-
 .nav-link.text-brand-yellow { color: #FACC15 !important; }
-
-/* Mode Navbar Menyusut */
-body.scrolled-mode .nav-island { 
-    background-color: rgba(5, 5, 5, 0.95); 
-    box-shadow: 0 15px 40px -5px rgba(0, 0, 0, 0.8);
-}
+body.scrolled-mode .nav-island { background-color: rgba(5, 5, 5, 0.95); box-shadow: 0 15px 40px -5px rgba(0, 0, 0, 0.8); }
 
 /* ========================================= */
-/* 4. ANIMASI & UTILS */
+/* 5. COMPONENT: CARDS & ANIMATIONS          */
 /* ========================================= */
 @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
 .animate-float { animation: float 6s ease-in-out infinite; }
-
-.spotlight-card { 
-    position: relative; overflow: hidden; background-color: rgba(20, 20, 20, 0.6); 
-    transition: transform 0.3s ease, border-color 0.3s ease; 
-}
-/* Disable spotlight/hover effect on mobile to prevent sticky hover states */
+.spotlight-card { position: relative; overflow: hidden; background-color: rgba(20, 20, 20, 0.6); transition: transform 0.3s ease, border-color 0.3s ease; }
 @media (hover: hover) {
     .spotlight-card:hover { border-color: rgba(250, 204, 21, 0.5); }
     .spotlight-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; border-radius: inherit; padding: 1px; background: radial-gradient(800px circle at var(--mouse-x) var(--mouse-y), rgba(250, 204, 21, 0.6), transparent 40%); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; pointer-events: none; z-index: 10; opacity: 0; transition: opacity 0.5s; }
     .spotlight-card:hover::before { opacity: 1; }
 }
+@keyframes morphShape { 0% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; } 50% { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; } 100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; } }
+.morphing-image { animation: morphShape 10s ease-in-out infinite alternate; border: 3px solid transparent; }
 
-@keyframes morphShape { 
-    0% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; } 
-    50% { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; } 
-    100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; } 
-}
-.morphing-image { 
-    animation: morphShape 10s ease-in-out infinite alternate; 
-    border: 3px solid transparent; 
-}
-
-/* ========================================================= */
-/* 5. MOBILE & RESPONSIVE TWEAKS (MAX-WIDTH 992px & 480px) */
-/* ========================================================= */
-
+/* ========================================= */
+/* 6. RESPONSIVE TWEAKS                      */
+/* ========================================= */
 @media (max-width: 992px) {
-    /* Navbar Adjustment */
-    .nav-island { 
-        width: 92% !important; 
-        max-width: 95% !important; 
-        padding: 0.75rem 1.25rem !important; 
-        border-radius: 1.5rem !important;
-    }
-    
-    /* Content Padding - Biar tidak ketabrak navbar */
-    .scrollable-content { 
-        padding-top: 6.5rem; 
-        padding-inline: 1.25rem; 
-    }
-
-    /* Grid Gap Reduction */
+    .nav-island { width: 92% !important; max-width: 95% !important; padding: 0.75rem 1.25rem !important; border-radius: 1.5rem !important; }
+    .scrollable-content { padding-top: 6.5rem; padding-inline: 1.25rem; }
     .grid { gap: 1.5rem !important; }
-    
-    /* Font Size Adjustments for Tablet */
-    h1 { font-size: 2.5rem !important; } /* Hero Title */
-    h2 { font-size: 1.75rem !important; } /* Section Title */
+    h1 { font-size: 2.5rem !important; } h2 { font-size: 1.75rem !important; }
 }
-
 @media (max-width: 480px) {
-    /* Navbar lebih ramping di HP */
-    .nav-island { 
-        padding: 0.6rem 1rem !important; 
-    }
-    
-    /* Logo size */
-    .nav-island img { width: 1.75rem; height: 1.75rem; }
-    .nav-island span { font-size: 1rem; }
-
-    /* Content */
-    .scrollable-content { 
-        padding-top: 6rem; /* Lebih turun dikit */
-        padding-bottom: 4rem; /* Ruang untuk scroll bawah */
-        padding-inline: 1rem;
-    }
-
-    /* Typography Scale Down - Agar tidak penuh sesak */
+    .nav-island { padding: 0.6rem 1rem !important; }
+    .nav-island img { width: 1.75rem; height: 1.75rem; } .nav-island span { font-size: 1rem; }
+    .scrollable-content { padding-top: 6rem; padding-bottom: 4rem; padding-inline: 1rem; }
     h1 { font-size: 2rem !important; line-height: 1.2 !important; }
     h2 { font-size: 1.5rem !important; margin-bottom: 1.5rem !important; }
-    p { font-size: 0.875rem !important; } /* Text sm */
-
-    /* Card Adjustments */
-    .spotlight-card, .bg-dark-800, .bg-dark-900 {
-        padding: 1.25rem !important; /* Padding kartu lebih kecil */
-        border-radius: 0.75rem !important;
-    }
-
-    /* Sembunyikan elemen dekorasi berat di mobile jika perlu */
-    .animate-float { animation: none !important; } /* Matikan animasi berat */
-    
-    /* Form Input Size */
-    input, textarea { 
-        font-size: 16px !important; /* Mencegah zoom otomatis iOS */ 
-        padding: 0.75rem !important;
-    }
+    p { font-size: 0.875rem !important; }
+    .spotlight-card, .bg-dark-800, .bg-dark-900 { padding: 1.25rem !important; border-radius: 0.75rem !important; }
+    .animate-float { animation: none !important; }
+    input, textarea { font-size: 16px !important; padding: 0.75rem !important; }
 }
+@media (max-width: 1023px) {
+    html, body { overflow-y: auto !important; overflow-x: hidden; height: auto !important; }
+    h1 { font-size: 2.25rem !important; line-height: 1.2; } h2 { font-size: 1.5rem !important; }
+    .nav-island { max-width: 92%; margin-inline: auto; }
+}
+
+/* ========================================= */
+/* 7. AI CHAT STYLE                          */
+/* ========================================= */
+.ai-msg-content p { margin-bottom: 0.5rem; }
+.ai-msg-content p:last-child { margin-bottom: 0; }
+.ai-msg-content ul { list-style-type: disc; padding-left: 1.2rem; margin-bottom: 0.5rem; }
+.ai-msg-content strong { color: #FACC15; font-weight: 700; }

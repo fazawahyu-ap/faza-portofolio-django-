@@ -1,3 +1,7 @@
+import markdown
+import google.generativeai as genai
+from django.conf import settings
+from django.views.decorators.csrf import csrf_exempt
 import json
 from django.shortcuts import render
 from django.http import JsonResponse
@@ -122,3 +126,71 @@ def submit_feedback(request):
 
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+    
+
+@require_POST
+def chat_with_ai(request):
+    try:
+        data = json.loads(request.body)
+        user_message = data.get('message')
+        
+        if not user_message:
+            return JsonResponse({'status': 'error', 'message': 'Pesan kosong'}, status=400)
+
+        # 1. Konfigurasi API Key dari Settings
+        if not settings.GEMINI_API_KEY:
+             return JsonResponse({'status': 'error', 'message': 'API Key belum disetting'}, status=500)
+        
+        genai.configure(api_key=settings.GEMINI_API_KEY)
+
+        # 2. Ambil Data Portofolio (Context)
+        projects = Project.objects.all()
+        experiences = WorkExperience.objects.all()
+        skills = Skill.objects.all()
+        educations = Education.objects.all()
+        
+        # 3. Susun Prompt (Instruksi untuk AI)
+        context_text = """
+        You are "Faza AI", a smart portfolio assistant for Faza Wahyu Adi Putra.
+        Your goal is to answer questions about Faza based STRICTLY on the data below.
+        
+        Style: Professional, friendly, and concise.
+        Language: Use the same language as the User (Indonesian or English).
+        
+        [FAZA'S DATA]
+        """
+        
+        # Masukkan Skills
+        tech_skills = ", ".join([s.name_en for s in skills if s.category == 'technical'])
+        context_text += f"\n- Technical Skills: {tech_skills}"
+        
+        # Masukkan Experience
+        context_text += "\n- Work Experience:"
+        for exp in experiences:
+            context_text += f"\n  * {exp.role_en} at {exp.company} ({exp.period}). Role: {exp.responsibilities_en}"
+
+        # Masukkan Projects
+        context_text += "\n- Projects:"
+        for proj in projects:
+            context_text += f"\n  * {proj.title_en}: {proj.desc_en} (Stack: {proj.tech_stack})"
+
+        # Masukkan Education
+        context_text += "\n- Education:"
+        for edu in educations:
+            context_text += f"\n  * {edu.institution} - {edu.major_en} ({edu.period})"
+
+        # Instruksi User
+        context_text += f"\n\n[USER]: {user_message}\n[YOU]:"
+
+        # 4. Kirim ke Gemini
+        model = genai.GenerativeModel('gemini-2.0-flash')
+        response = model.generate_content(context_text)
+        
+        # 5. Format hasil ke HTML (agar list/bold rapi)
+        ai_reply_html = markdown.markdown(response.text)
+
+        return JsonResponse({'status': 'success', 'reply': ai_reply_html})
+
+    except Exception as e:
+        print(f"AI Error: {e}")
+        return JsonResponse({'status': 'error', 'message': 'Maaf, AI sedang sibuk.'}, status=500)

@@ -4,43 +4,45 @@
 {% block content %}
 
 <section id="home" class="fp-section">
-    <div class="scrollable-content center-content py-8">
-        <div class="max-w-4xl w-full mx-auto px-6 grid lg:grid-cols-2 gap-8 items-center">
-            
-            <div class="space-y-5 order-2 lg:order-1 text-center lg:text-left">
-                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-yellow/10 border border-brand-yellow/20 text-brand-yellow text-[10px] font-bold uppercase tracking-wider mx-auto lg:mx-0">
-                    <span class="w-1.5 h-1.5 rounded-full bg-brand-yellow animate-pulse"></span>
-                    Open to Work
+    <div class="scrollable-content">
+        <div class="min-h-[80vh] flex flex-col justify-center py-8">
+            <div class="max-w-4xl w-full mx-auto px-6 grid lg:grid-cols-2 gap-8 items-center">
+                
+                <div class="space-y-5 order-2 lg:order-1 text-center lg:text-left">
+                   <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-yellow/10 border border-brand-yellow/20 text-brand-yellow text-[10px] font-bold uppercase tracking-wider mx-auto lg:mx-0">
+                        <span class="w-1.5 h-1.5 rounded-full bg-brand-yellow animate-pulse"></span>
+                        Open to Work
+                    </div>
+                    
+                    <h1 class="text-4xl lg:text-5xl font-extrabold text-white leading-tight" data-translate-key="hero_title">
+                        {{ trans.hero_title|default:"Faza Wahyu Adi Putra" }}
+                    </h1>
+                    
+                    <h2 class="text-xl lg:text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-brand-yellow to-white" data-translate-key="hero_subtitle">
+                        {{ trans.hero_subtitle|default:"IT Support & Developer" }}
+                    </h2>
+                    
+                    <p class="text-gray-400 text-sm max-w-md mx-auto lg:mx-0 leading-relaxed">
+                        Bridging Hardware Issues with Software Solutions.
+                    </p>
+                    
+                    <div class="flex flex-wrap justify-center lg:justify-start gap-3 pt-2">
+                        <a href="{{ cv_url }}" target="_blank" class="px-6 py-2.5 bg-brand-yellow text-black text-sm font-bold rounded-lg hover:bg-yellow-300 transition-transform hover:-translate-y-1 shadow-lg shadow-brand-yellow/20">
+                            <span data-translate-key="hero_cv_button">{{ trans.hero_cv_button|default:"Download CV" }}</span>
+                        </a>
+                            <a href="#about" class="nav-link px-6 py-2.5 bg-transparent border border-white/20 text-white text-sm font-bold rounded-lg hover:bg-white/5 transition-colors">
+                                <span data-translate-key="hero_about_button">{{ trans.hero_about_button|default:"About Me" }}</span>
+                            </a>
+                    </div>
                 </div>
-                
-                <h1 class="text-4xl lg:text-5xl font-extrabold text-white leading-tight" data-translate-key="hero_title">
-                    {{ trans.hero_title|default:"Faza Wahyu Adi Putra" }}
-                </h1>
-                
-                <h2 class="text-xl lg:text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-brand-yellow to-white" data-translate-key="hero_subtitle">
-                    {{ trans.hero_subtitle|default:"IT Support & Developer" }}
-                </h2>
-                
-                <p class="text-gray-400 text-sm max-w-md mx-auto lg:mx-0 leading-relaxed">
-                    Bridging Hardware Issues with Software Solutions.
-                </p>
-                
-                <div class="flex flex-wrap justify-center lg:justify-start gap-3 pt-2">
-                    <a href="{{ cv_url }}" target="_blank" class="px-6 py-2.5 bg-brand-yellow text-black text-sm font-bold rounded-lg hover:bg-yellow-300 transition-transform hover:-translate-y-1 shadow-lg shadow-brand-yellow/20">
-                        <span data-translate-key="hero_cv_button">{{ trans.hero_cv_button|default:"Download CV" }}</span>
-                    </a>
-                    <a href="#about" class="px-6 py-2.5 bg-transparent border border-white/20 text-white text-sm font-bold rounded-lg hover:bg-white/5 transition-colors">
-                        <span data-translate-key="hero_about_button">{{ trans.hero_about_button|default:"About Me" }}</span>
-                    </a>
-                </div>
-            </div>
 
-            <div class="order-1 lg:order-2 flex justify-center relative">
-                <div class="relative w-56 h-56 lg:w-72 lg:h-72 animate-float">
-                    <div class="absolute inset-0 bg-gradient-to-tr from-brand-yellow to-transparent rounded-full opacity-20 blur-3xl"></div>
-                    <img src="{% static 'web/img/profile.jpg' %}" onerror="this.src='https://placehold.co/400x400/171717/FACC15?text=Faza'" alt="Profile" class="relative w-full h-full object-cover morphing-image shadow-2xl rotate-3 hover:rotate-0 transition-transform duration-500 z-10">
+                <div class="order-1 lg:order-2 flex justify-center relative">
+                    <div class="relative w-56 h-56 lg:w-72 lg:h-72 animate-float">
+                        <div class="absolute inset-0 bg-gradient-to-tr from-brand-yellow to-transparent rounded-full opacity-20 blur-3xl"></div>
+                        <img src="{% static 'web/img/profile.jpg' %}" onerror="this.src='https://placehold.co/400x400/171717/FACC15?text=Faza'" alt="Profile" class="relative w-full h-full object-cover morphing-image shadow-2xl rotate-3 hover:rotate-0 transition-transform duration-500 z-10">
+                    </div>
                 </div>
-            </div>
+                </div>
         </div>
     </div>
 </section>
@@ -312,85 +314,88 @@
     </div>
 </section>
 
-<section id="contact" class="fp-section bg-dark-900">
-    <div class="scrollable-content center-content flex-col py-8">
-        <div class="max-w-4xl w-full mx-auto px-6 grid lg:grid-cols-2 gap-8 items-center">
+<section id="contact" class="fp-section">
+    <div class="scrollable-content">
+        <div class="min-h-[80vh] flex flex-col justify-center py-8">
             
-<div class="space-y-6">
-                <div>
-                    <h2 class="text-3xl lg:text-4xl font-extrabold text-white mb-2 leading-tight">
-                        Let's build <span class="text-brand-yellow">together.</span>
-                    </h2>
-                    
-                    <p class="text-gray-400 text-sm leading-relaxed" data-translate-key="contact_desc">
-                        {{ trans.contact_desc|default:"Punya ide proyek atau sekadar ingin menyapa? Hubungi saya kapan saja." }}
-                    </p>
+            <div class="max-w-4xl w-full mx-auto px-6 grid lg:grid-cols-2 gap-8 items-center">
+                <div class="space-y-6">
+                    <div>
+                        <h2 class="text-3xl lg:text-4xl font-extrabold text-white mb-2 leading-tight">
+                            Let's build <span class="text-brand-yellow">together.</span>
+                        </h2>
+                        
+                        <p class="text-gray-400 text-sm leading-relaxed" data-translate-key="contact_desc">
+                            {{ trans.contact_desc|default:"Punya ide proyek atau sekadar ingin menyapa? Hubungi saya kapan saja." }}
+                        </p>
+                    </div>
+
+                    <a href="mailto:fazawahyu10@gmail.com" class="flex items-center gap-3 p-3 bg-dark-800 border border-white/5 rounded-xl hover:border-brand-yellow/30 transition-all group">
+                        <div class="w-10 h-10 bg-brand-yellow/10 rounded-full flex items-center justify-center text-brand-yellow group-hover:scale-110 transition-transform">
+                            <i data-feather="mail" class="w-4 h-4"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-500 font-bold uppercase tracking-wider">Email Me</p>
+                            <p class="text-white font-medium text-sm">fazawahyu10@gmail.com</p>
+                        </div>
+                    </a>
+
+                    <div>
+                        <p class="text-xs text-gray-500 font-bold uppercase tracking-wider mb-2">Socials</p>
+                        <div class="flex gap-3">
+                            <a href="https://github.com/fazawahyu-ap" target="_blank" class="w-10 h-10 bg-dark-800 border border-white/10 rounded-lg flex items-center justify-center text-gray-400 hover:text-brand-yellow hover:border-brand-yellow transition-all hover:-translate-y-1">
+                                <i data-feather="github" class="w-4 h-4"></i>
+                            </a>
+                            <a href="https://www.linkedin.com/in/faza-wap/" target="_blank" class="w-10 h-10 bg-dark-800 border border-white/10 rounded-lg flex items-center justify-center text-gray-400 hover:text-blue-400 hover:border-blue-400 transition-all hover:-translate-y-1">
+                                <i data-feather="linkedin" class="w-4 h-4"></i>
+                            </a>
+                            <a href="https://www.instagram.com/faza_wap/" target="_blank" class="w-10 h-10 bg-dark-800 border border-white/10 rounded-lg flex items-center justify-center text-gray-400 hover:text-pink-500 hover:border-pink-500 transition-all hover:-translate-y-1">
+                                <i data-feather="instagram" class="w-4 h-4"></i>
+                            </a>
+                            <a href="https://x.com/faza_wap" target="_blank" class="w-10 h-10 bg-dark-800 border border-white/10 rounded-lg flex items-center justify-center text-gray-400 hover:text-white hover:border-white transition-all hover:-translate-y-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4l11.733 16h4.267l-11.733 -16z"/><path d="M4 20l6.768 -6.768m2.46 -2.46l6.772 -6.772"/></svg>
+                            </a>
+                        </div>
+                    </div>
                 </div>
 
-                <a href="mailto:fazawahyu10@gmail.com" class="flex items-center gap-3 p-3 bg-dark-800 border border-white/5 rounded-xl hover:border-brand-yellow/30 transition-all group">
-                    <div class="w-10 h-10 bg-brand-yellow/10 rounded-full flex items-center justify-center text-brand-yellow group-hover:scale-110 transition-transform">
-                        <i data-feather="mail" class="w-4 h-4"></i>
-                    </div>
-                    <div>
-                        <p class="text-xs text-gray-500 font-bold uppercase tracking-wider">Email Me</p>
-                        <p class="text-white font-medium text-sm">fazawahyu10@gmail.com</p>
-                    </div>
-                </a>
-
-                <div>
-                    <p class="text-xs text-gray-500 font-bold uppercase tracking-wider mb-2">Socials</p>
-                    <div class="flex gap-3">
-                        <a href="https://github.com/fazawahyu-ap" target="_blank" class="w-10 h-10 bg-dark-800 border border-white/10 rounded-lg flex items-center justify-center text-gray-400 hover:text-brand-yellow hover:border-brand-yellow transition-all hover:-translate-y-1">
-                            <i data-feather="github" class="w-4 h-4"></i>
-                        </a>
-                        <a href="https://www.linkedin.com/in/faza-wap/" target="_blank" class="w-10 h-10 bg-dark-800 border border-white/10 rounded-lg flex items-center justify-center text-gray-400 hover:text-blue-400 hover:border-blue-400 transition-all hover:-translate-y-1">
-                            <i data-feather="linkedin" class="w-4 h-4"></i>
-                        </a>
-                        <a href="https://www.instagram.com/faza_wap/" target="_blank" class="w-10 h-10 bg-dark-800 border border-white/10 rounded-lg flex items-center justify-center text-gray-400 hover:text-pink-500 hover:border-pink-500 transition-all hover:-translate-y-1">
-                            <i data-feather="instagram" class="w-4 h-4"></i>
-                        </a>
-                        <a href="https://x.com/faza_wap" target="_blank" class="w-10 h-10 bg-dark-800 border border-white/10 rounded-lg flex items-center justify-center text-gray-400 hover:text-white hover:border-white transition-all hover:-translate-y-1">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4l11.733 16h4.267l-11.733 -16z"/><path d="M4 20l6.768 -6.768m2.46 -2.46l6.772 -6.772"/></svg>
-                        </a>
-                    </div>
+                <div class="bg-dark-800/50 border border-white/5 rounded-2xl p-6 backdrop-blur-sm">
+                    <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                        <i data-feather="message-square" class="text-brand-yellow w-4 h-4"></i>
+                        <span data-translate-key="footer_form_title">Feedback</span>
+                    </h3>
+                    
+                    <form id="feedbackForm" class="space-y-3">
+                        {% csrf_token %}
+                        <div>
+                            <input type="text" id="fb_name" name="name" class="w-full bg-dark-900 border border-white/10 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-brand-yellow focus:ring-1 focus:ring-brand-yellow transition-all placeholder-gray-600" placeholder="Nama Anda" data-translate-key="about_name_label" required>
+                        </div>
+                        <div>
+                            <input type="email" id="fb_email" name="email" class="w-full bg-dark-900 border border-white/10 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-brand-yellow focus:ring-1 focus:ring-brand-yellow transition-all placeholder-gray-600" placeholder="Email Anda" data-translate-key="about_email_label" required>
+                        </div>
+                        <div>
+                            <textarea id="fb_message" name="message" rows="3" class="w-full bg-dark-900 border border-white/10 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-brand-yellow focus:ring-1 focus:ring-brand-yellow transition-all placeholder-gray-600" placeholder="Tulis pesan..." data-translate-key="footer_form_placeholder" required></textarea>
+                        </div>
+                        
+                        <button type="submit" id="fb_submit_btn" class="w-full bg-brand-yellow text-black font-bold py-2.5 rounded-lg hover:bg-yellow-300 transition-transform active:scale-95 flex items-center justify-center gap-2 text-sm shadow-lg shadow-brand-yellow/10">
+                            <i data-feather="send" class="w-3 h-3"></i> 
+                            <span id="fb_btn_text" data-translate-key="footer_form_button">Kirim Pesan</span>
+                        </button>
+                        
+                        <p id="fb_status" class="text-xs text-center mt-2 hidden"></p>
+                    </form>
                 </div>
             </div>
 
-            <div class="bg-dark-800/50 border border-white/5 rounded-2xl p-6 backdrop-blur-sm">
-                <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                    <i data-feather="message-square" class="text-brand-yellow w-4 h-4"></i>
-                    <span data-translate-key="footer_form_title">Feedback</span>
-                </h3>
-                
-                <form id="feedbackForm" class="space-y-3">
-                    {% csrf_token %}
-                    <div>
-                        <input type="text" id="fb_name" name="name" class="w-full bg-dark-900 border border-white/10 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-brand-yellow focus:ring-1 focus:ring-brand-yellow transition-all placeholder-gray-600" placeholder="Nama Anda" data-translate-key="about_name_label" required>
-                    </div>
-                    <div>
-                        <input type="email" id="fb_email" name="email" class="w-full bg-dark-900 border border-white/10 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-brand-yellow focus:ring-1 focus:ring-brand-yellow transition-all placeholder-gray-600" placeholder="Email Anda" data-translate-key="about_email_label" required>
-                    </div>
-                    <div>
-                        <textarea id="fb_message" name="message" rows="3" class="w-full bg-dark-900 border border-white/10 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-brand-yellow focus:ring-1 focus:ring-brand-yellow transition-all placeholder-gray-600" placeholder="Tulis pesan..." data-translate-key="footer_form_placeholder" required></textarea>
-                    </div>
-                    
-                    <button type="submit" id="fb_submit_btn" class="w-full bg-brand-yellow text-black font-bold py-2.5 rounded-lg hover:bg-yellow-300 transition-transform active:scale-95 flex items-center justify-center gap-2 text-sm shadow-lg shadow-brand-yellow/10">
-                        <i data-feather="send" class="w-3 h-3"></i> 
-                        <span id="fb_btn_text" data-translate-key="footer_form_button">Kirim Pesan</span>
-                    </button>
-                    
-                    <p id="fb_status" class="text-xs text-center mt-2 hidden"></p>
-                </form>
-            </div>
+            <footer class="mt-8 pt-6 border-t border-white/5 w-full max-w-4xl px-6 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-600 mx-auto">
+                <div data-translate-key="footer_copyright">&copy; 2025 Faza Wahyu Adi Putra.</div>
+                <div class="flex gap-4">
+                    <button id="btn-privacy" class="hover:text-gray-400 transition-colors">Privacy Policy</button>
+                    <button id="btn-terms" class="hover:text-gray-400 transition-colors">Terms of Service</button>
+                </div>
+            </footer>
+            
         </div>
-
-<footer class="mt-8 pt-6 border-t border-white/5 w-full max-w-4xl px-6 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-600">
-            <div data-translate-key="footer_copyright">&copy; 2025 Faza Wahyu Adi Putra.</div>
-            <div class="flex gap-4">
-                <button id="btn-privacy" class="hover:text-gray-400 transition-colors">Privacy Policy</button>
-                <button id="btn-terms" class="hover:text-gray-400 transition-colors">Terms of Service</button>
-            </div>
-        </footer>
     </div>
 </section>
 
